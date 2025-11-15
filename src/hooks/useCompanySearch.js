@@ -1,25 +1,25 @@
-import { useState, useCallback } from 'react';
-import { searchCompany } from '../services/companyService';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { searchCompanies } from '../services/companyService';
 
 /**
- * Custom hook for company search functionality
- * TODO: Add debouncing for search input
- * TODO: Add search history
- * TODO: Add caching mechanism
+ * Custom hook for company search functionality with debouncing
  */
-export default function useCompanySearch() {
+export default function useCompanySearch(debounceMs = 500) {
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const debounceTimerRef = useRef(null);
 
   /**
    * Search for companies
-   * @param {string} query - Search query
+   * @param {string} searchQuery - Search query
    */
-  const search = useCallback(async (query) => {
-    if (!query || query.trim().length === 0) {
+  const search = useCallback(async (searchQuery) => {
+    if (!searchQuery || searchQuery.trim().length === 0) {
       setResults([]);
+      setError(null);
       return;
     }
 
@@ -27,9 +27,8 @@ export default function useCompanySearch() {
     setError(null);
 
     try {
-      // TODO: Replace with actual API call
-      const data = await searchCompany(query);
-      setResults(data);
+      const data = await searchCompanies(searchQuery);
+      setResults(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message || 'Failed to search companies');
       setResults([]);
@@ -39,9 +38,39 @@ export default function useCompanySearch() {
   }, []);
 
   /**
+   * Debounced search effect
+   */
+  useEffect(() => {
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Skip search if query is empty
+    if (!query || query.trim().length === 0) {
+      setResults([]);
+      setError(null);
+      return;
+    }
+
+    // Set new timer for debounced search
+    debounceTimerRef.current = setTimeout(() => {
+      search(query);
+    }, debounceMs);
+
+    // Cleanup
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [query, debounceMs, search]);
+
+  /**
    * Clear search results
    */
   const clearResults = useCallback(() => {
+    setQuery('');
     setResults([]);
     setError(null);
     setSelectedCompany(null);
@@ -56,6 +85,8 @@ export default function useCompanySearch() {
   }, []);
 
   return {
+    query,
+    setQuery,
     loading,
     error,
     results,

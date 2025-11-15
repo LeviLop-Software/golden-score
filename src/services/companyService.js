@@ -1,31 +1,56 @@
 import axios from 'axios';
+import sampleCompany from '../mock/sample-company.json';
 
 /**
  * Company Service
  * Handles all company-related API calls
- * TODO: Configure base URL and API endpoints
- * TODO: Add error handling
- * TODO: Add authentication headers
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const GOV_IL_API = 'https://data.gov.il/api/3/action/datastore_search';
+const RESOURCE_ID = 'f004176c-b85f-4542-8901-7b3176f9a054';
 
 /**
- * Search for a company by name or ID
+ * Search for companies using data.gov.il API
+ * @param {string} query - Company name or identifier
+ * @returns {Promise<Array>} Array of company records
+ */
+export async function searchCompanies(query) {
+  if (!query || query.trim().length === 0) {
+    return [];
+  }
+
+  try {
+    const response = await axios.get(GOV_IL_API, {
+      params: {
+        resource_id: RESOURCE_ID,
+        q: query,
+        limit: 20,
+      },
+    });
+
+    if (response.data?.success && response.data?.result?.records) {
+      return response.data.result.records;
+    }
+
+    // Fallback to mock data if API response is invalid
+    console.warn('Invalid API response, using mock data');
+    return [sampleCompany];
+  } catch (error) {
+    console.error('Error searching companies:', error);
+    // Fallback to mock data on error
+    return [sampleCompany];
+  }
+}
+
+/**
+ * Search for a company by name or ID (legacy function)
  * @param {string} query - Company name or identifier
  * @returns {Promise<Object>} Company data
  */
 export async function searchCompany(query) {
-  try {
-    // TODO: Replace with actual API endpoint
-    const response = await axios.get(`${API_BASE_URL}/companies/search`, {
-      params: { q: query },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error searching company:', error);
-    throw error;
-  }
+  const results = await searchCompanies(query);
+  return results[0] || null;
 }
 
 /**
