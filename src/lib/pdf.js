@@ -4,52 +4,98 @@ import 'jspdf-autotable';
 /**
  * PDF Generation Library
  * Creates PDF reports for company data
+ * TODO: Add Hebrew font support for jsPDF
  * TODO: Add company logo
  * TODO: Add charts/graphs
- * TODO: Add custom styling/branding
- * TODO: Add Hebrew font support for jsPDF
  */
 
 /**
- * Generate PDF report for a company
- * @param {Object} company - Company data
- * @param {string} filename - Output filename
+ * Export company data as PDF
+ * @param {Object} company - Company data object
  */
-export function generateCompanyReport(company, filename = 'company-report.pdf') {
-  // TODO: Add Hebrew font support
+export function exportCompanyPdf(company) {
   const doc = new jsPDF();
 
   // Header
-  doc.setFontSize(20);
-  doc.text('Company Report', 20, 20);
-
+  doc.setFontSize(22);
+  doc.text('Company Report', 105, 20, { align: 'center' });
+  
   // Company Name
-  doc.setFontSize(16);
-  doc.text(company.name || 'N/A', 20, 35);
+  doc.setFontSize(18);
+  doc.text(company.name || company.corporationName || 'N/A', 105, 35, { align: 'center' });
+
+  // Add line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(20, 42, 190, 42);
 
   // Company Details
+  let yPos = 55;
   doc.setFontSize(12);
-  let yPos = 50;
 
   const details = [
-    ['Score', company.score?.toString() || 'N/A'],
-    ['Industry', company.industry || 'N/A'],
-    ['Location', company.location || 'N/A'],
-    ['Employees', company.employees?.toString() || 'N/A'],
+    ['Registration Number', company.registrationNumber || 'N/A'],
+    ['Type', company.type || 'N/A'],
+    ['Status', company.status || 'N/A'],
   ];
 
-  details.forEach(([label, value]) => {
-    doc.text(`${label}: ${value}`, 20, yPos);
-    yPos += 10;
+  // Add address if available
+  const address = company._raw?.['כתובת'] || company._raw?.['עיר'] || '';
+  if (address) {
+    details.push(['Address', address]);
+  }
+
+  // Add founding date if available
+  const foundingDate = company._raw?.['תאריך_רישום'] || company._raw?.['תאריך רישום'] || '';
+  if (foundingDate) {
+    details.push(['Founding Date', foundingDate]);
+  }
+
+  // Add business field if available
+  const businessField = company._raw?.['תחום'] || company._raw?.['ענף'] || '';
+  if (businessField) {
+    details.push(['Business Field', businessField]);
+  }
+
+  // Create table with autoTable
+  doc.autoTable({
+    startY: yPos,
+    head: [['Field', 'Value']],
+    body: details,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [59, 130, 246],
+      fontSize: 12,
+      fontStyle: 'bold',
+    },
+    styles: {
+      fontSize: 11,
+      cellPadding: 5,
+    },
   });
 
-  // TODO: Add table with autoTable
-  // doc.autoTable({
-  //   head: [['Metric', 'Value']],
-  //   body: details,
-  //   startY: 70,
-  // });
+  // Add footer
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(10);
+    doc.setTextColor(150);
+    doc.text(
+      `Generated on ${new Date().toLocaleDateString('he-IL')}`,
+      105,
+      285,
+      { align: 'center' }
+    );
+    doc.text(
+      `Page ${i} of ${pageCount}`,
+      105,
+      290,
+      { align: 'center' }
+    );
+  }
 
+  // Generate filename
+  const filename = `company-${company.registrationNumber || 'report'}-${Date.now()}.pdf`;
+  
   // Save PDF
   doc.save(filename);
 }
