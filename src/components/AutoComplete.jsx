@@ -81,23 +81,29 @@ export default function AutoComplete({ onSelect }) {
   };
 
   const handleInputChange = (e) => {
-    setQuery(e.target.value);
-    if (e.target.value.trim().length >= 2) {
+    const value = e.target.value;
+    setQuery(value);
+  };
+
+  const handleInputFocus = () => {
+    if (query.trim().length >= 2 && results.length > 0) {
       setShowDropdown(true);
     }
   };
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className="relative w-full">
       {/* Search Input */}
       <div className="relative">
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
+          onFocus={handleInputFocus}
           placeholder={t('search') + ' (לפחות 2 תווים)'}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={loading}
+          autoComplete="off"
         />
         {loading && (
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -115,11 +121,17 @@ export default function AutoComplete({ onSelect }) {
 
       {/* Dropdown */}
       {showDropdown && results.length > 0 && (
-        <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto">
+        <div 
+          ref={dropdownRef}
+          className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto"
+        >
           {results.map((company, index) => (
             <div
               key={company.id || index}
-              onClick={() => handleSelect(company)}
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent input blur
+                handleSelect(company);
+              }}
               className="p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 transition-colors"
             >
               <div className="font-semibold text-gray-900">

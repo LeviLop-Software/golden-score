@@ -28,17 +28,62 @@ export async function searchCompanies(query) {
     });
 
     if (response.data?.success && response.data?.result?.records) {
-      // Map to clean structure with only needed fields
-      return response.data.result.records.map(record => ({
-        id: record['מספר_רישום'] || record.registration_number || record._id,
-        name: record['שם_חברה'] || record.corporation_name || 'N/A',
-        registrationNumber: record['מספר_רישום'] || record.registration_number,
-        corporationName: record['שם_חברה'] || record.corporation_name,
-        status: record['סטטוס_תאגיד'] || record.corporation_status,
-        type: record['סוג_תאגיד'] || record.corporation_type,
-        // Keep full record for detailed view
-        _raw: record,
-      }));
+      const records = response.data.result.records;
+      
+      // Log first record to see actual field names
+      if (records.length > 0) {
+        console.log('Sample API record:', records[0]);
+      }
+
+      // Map to clean structure with all possible field name variations
+      return records.map(record => {
+        // Log all keys to debug
+        console.log('Record keys:', Object.keys(record));
+        
+        // Try all possible field name variations for registration number
+        const registrationNumber = 
+          record['מספר_רישום'] || 
+          record['מס_רישום'] ||
+          record['מספר רישום'] ||
+          record['registration_number'] || 
+          record.מספר_רישום ||
+          record._id ||
+          '';
+        
+        const corporationName = 
+          record['שם_חברה'] || 
+          record['שם_תאגיד'] ||
+          record.corporation_name || 
+          record.שם_חברה ||
+          record['שם חברה'] ||
+          record.name ||
+          'לא ידוע';
+        
+        const status = 
+          record['סטטוס_תאגיד'] || 
+          record['סטטוס'] ||
+          record.corporation_status || 
+          record.status ||
+          '';
+        
+        const type = 
+          record['סוג_תאגיד'] || 
+          record['סוג'] ||
+          record.corporation_type || 
+          record.type ||
+          '';
+
+        return {
+          id: registrationNumber || `temp-${Date.now()}-${Math.random()}`,
+          name: corporationName,
+          registrationNumber,
+          corporationName,
+          status,
+          type,
+          // Keep full record for detailed view
+          _raw: record,
+        };
+      });
     }
 
     return [];
