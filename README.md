@@ -20,6 +20,52 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Internationalization (i18n)
+
+This project is configured with Hebrew (עברית) as the default language with RTL support.
+
+### Using Translations
+
+In your components, use the `useTranslation` hook:
+
+```tsx
+'use client';
+
+import { useTranslation } from 'react-i18next';
+
+export default function MyComponent() {
+  const { t } = useTranslation();
+  
+  return <h1>{t('welcome')}</h1>;
+}
+```
+
+### Adding English or Other Languages
+
+1. Create a new translation file: `src/locales/en/translation.json`
+2. Add the same keys with English values:
+   ```json
+   {
+     "search": "Search",
+     "exportPdf": "Export to PDF",
+     "score": "Score"
+   }
+   ```
+3. Import and register the language in `src/i18n.tsx`:
+   ```tsx
+   import enTranslation from './locales/en/translation.json';
+   
+   resources: {
+     he: { translation: heTranslation },
+     en: { translation: enTranslation },
+   }
+   ```
+4. To switch languages, use: `i18n.changeLanguage('en')`
+
+### Available Translation Keys
+
+See `src/locales/he/translation.json` for all available translation keys.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,0 +1,19 @@
+{
+  "search": "חיפוש",
+  "exportPdf": "ייצא ל-PDF",
+  "score": "ציון",
+  "company": "חברה",
+  "results": "תוצאות",
+  "loading": "טוען...",
+  "error": "שגיאה",
+  "noResults": "לא נמצאו תוצאות",
+  "welcome": "ברוכים הבאים",
+  "checkCompany": "בדוק חברה",
+  "companyName": "שם החברה",
+  "submit": "שלח",
+  "cancel": "ביטול",
+  "save": "שמור",
+  "delete": "מחק",
+  "edit": "ערוך",
+  "close": "סגור"
+}
