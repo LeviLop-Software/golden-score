@@ -16,19 +16,7 @@ export default function AutoComplete({ onSelect }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState(null);
   const debounceTimerRef = useRef(null);
-  const dropdownRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const inputRef = useRef(null);
 
   // Debounced search effect
   useEffect(() => {
@@ -75,9 +63,16 @@ export default function AutoComplete({ onSelect }) {
   const handleSelect = (company) => {
     setQuery(company.name);
     setShowDropdown(false);
+    setResults([]);
     if (onSelect) {
       onSelect(company);
     }
+    // Return focus to input after selection
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   const handleInputChange = (e) => {
@@ -96,11 +91,12 @@ export default function AutoComplete({ onSelect }) {
       {/* Search Input */}
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          placeholder={t('search') + ' (לפחות 2 תווים)'}
+          placeholder={t('search') + ' (שם או ח"פ - לפחות 2 תווים)'}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={loading}
           autoComplete="off"
@@ -121,17 +117,14 @@ export default function AutoComplete({ onSelect }) {
 
       {/* Dropdown */}
       {showDropdown && results.length > 0 && (
-        <div 
-          ref={dropdownRef}
-          className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto"
-        >
+        <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto">
           {results.map((company, index) => (
             <div
               key={company.id || index}
               onMouseDown={(e) => {
-                e.preventDefault(); // Prevent input blur
-                handleSelect(company);
+                e.preventDefault(); // Prevent input from losing focus
               }}
+              onClick={() => handleSelect(company)}
               className="p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 transition-colors"
             >
               <div className="font-semibold text-gray-900">

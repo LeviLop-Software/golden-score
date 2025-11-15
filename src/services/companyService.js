@@ -10,7 +10,8 @@ const RESOURCE_ID = 'f004176c-b85f-4542-8901-7b3176f9a054';
 
 /**
  * Search for companies using data.gov.il API
- * @param {string} query - Company name or identifier
+ * Supports search by company name or registration number (ח"פ)
+ * @param {string} query - Company name or registration number
  * @returns {Promise<Array>} Array of company records with id and name
  */
 export async function searchCompanies(query) {
@@ -19,13 +20,28 @@ export async function searchCompanies(query) {
   }
 
   try {
-    const response = await axios.get(GOV_IL_API, {
-      params: {
-        resource_id: RESOURCE_ID,
-        q: query,
-        limit: 20,
-      },
-    });
+    // Check if query is a number (registration number search)
+    const isRegistrationNumber = /^\d+$/.test(query.trim());
+    
+    // Build search parameters
+    const params = {
+      resource_id: RESOURCE_ID,
+      limit: 20,
+    };
+
+    // If it's a registration number, search specifically in that field
+    // Otherwise do a general text search
+    if (isRegistrationNumber) {
+      // Search by registration number field
+      params.filters = JSON.stringify({
+        'מספר_רישום': query.trim()
+      });
+    } else {
+      // General text search
+      params.q = query;
+    }
+
+    const response = await axios.get(GOV_IL_API, { params });
 
     if (response.data?.success && response.data?.result?.records) {
       const records = response.data.result.records;
