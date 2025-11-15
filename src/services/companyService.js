@@ -1,19 +1,17 @@
 import axios from 'axios';
-import sampleCompany from '../mock/sample-company.json';
 
 /**
  * Company Service
  * Handles all company-related API calls
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 const GOV_IL_API = 'https://data.gov.il/api/3/action/datastore_search';
 const RESOURCE_ID = 'f004176c-b85f-4542-8901-7b3176f9a054';
 
 /**
  * Search for companies using data.gov.il API
  * @param {string} query - Company name or identifier
- * @returns {Promise<Array>} Array of company records
+ * @returns {Promise<Array>} Array of company records with id and name
  */
 export async function searchCompanies(query) {
   if (!query || query.trim().length === 0) {
@@ -30,27 +28,24 @@ export async function searchCompanies(query) {
     });
 
     if (response.data?.success && response.data?.result?.records) {
-      return response.data.result.records;
+      // Map to clean structure with only needed fields
+      return response.data.result.records.map(record => ({
+        id: record['מספר_רישום'] || record.registration_number || record._id,
+        name: record['שם_חברה'] || record.corporation_name || 'N/A',
+        registrationNumber: record['מספר_רישום'] || record.registration_number,
+        corporationName: record['שם_חברה'] || record.corporation_name,
+        status: record['סטטוס_תאגיד'] || record.corporation_status,
+        type: record['סוג_תאגיד'] || record.corporation_type,
+        // Keep full record for detailed view
+        _raw: record,
+      }));
     }
 
-    // Fallback to mock data if API response is invalid
-    console.warn('Invalid API response, using mock data');
-    return [sampleCompany];
+    return [];
   } catch (error) {
     console.error('Error searching companies:', error);
-    // Fallback to mock data on error
-    return [sampleCompany];
+    return [];
   }
-}
-
-/**
- * Search for a company by name or ID (legacy function)
- * @param {string} query - Company name or identifier
- * @returns {Promise<Object>} Company data
- */
-export async function searchCompany(query) {
-  const results = await searchCompanies(query);
-  return results[0] || null;
 }
 
 /**

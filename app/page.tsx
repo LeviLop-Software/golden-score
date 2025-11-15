@@ -1,7 +1,13 @@
-import DashboardLayout from "@/src/components/DashboardLayout";
-import SearchBar from "@/src/components/SearchBar";
+'use client';
+
+import { useState } from 'react';
+import DashboardLayout from '@/src/components/DashboardLayout';
+import AutoComplete from '@/src/components/AutoComplete';
+import CompanyCard from '@/src/components/CompanyCard';
 
 export default function Home() {
+  const [selected, setSelected] = useState(null);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -10,8 +16,15 @@ export default function Home() {
           <p className="text-gray-600 mb-6">
             חפש חברות ישראליות לפי שם, מספר רישום או מילות מפתח
           </p>
-          <SearchBar />
+          <AutoComplete onSelect={setSelected} />
         </div>
+
+        {/* Display selected company card */}
+        {selected && (
+          <div className="animate-fadeIn">
+            <CompanyCard company={selected} />
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
