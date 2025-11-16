@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchCompanies } from '../services/companyService';
 
@@ -17,6 +17,27 @@ export default function AutoComplete({ onSelect }) {
   const [error, setError] = useState(null);
   const debounceTimerRef = useRef(null);
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
+  const wasInputFocusedRef = useRef(false);
+
+  // Keep track of input focus
+  useLayoutEffect(() => {
+    if (wasInputFocusedRef.current && inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.focus();
+    }
+  });
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Debounced search effect
   useEffect(() => {
@@ -42,7 +63,10 @@ export default function AutoComplete({ onSelect }) {
         setError(null);
         const data = await searchCompanies(query);
         setResults(Array.isArray(data) ? data : []);
-        setShowDropdown(data.length > 0);
+        // Show dropdown only if we have results
+        if (data.length > 0) {
+          setShowDropdown(true);
+        }
       } catch (err) {
         setError(err.message || 'שגיאה בחיפוש');
         setResults([]);
@@ -61,33 +85,35 @@ export default function AutoComplete({ onSelect }) {
   }, [query]);
 
   const handleSelect = (company) => {
-    setQuery(company.name);
+    // Close dropdown and clear results immediately
     setShowDropdown(false);
     setResults([]);
+    setQuery('');
+    
+    // Call parent callback
     if (onSelect) {
       onSelect(company);
     }
-    // Return focus to input after selection
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
+    
+    // Navigate to company page
+    window.location.href = `/company/${company.companyNumber || company.id}`;
   };
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
+    wasInputFocusedRef.current = true;
+    setQuery(e.target.value);
   };
 
   const handleInputFocus = () => {
-    if (query.trim().length >= 2 && results.length > 0) {
-      setShowDropdown(true);
-    }
+    wasInputFocusedRef.current = true;
+  };
+
+  const handleInputBlur = () => {
+    wasInputFocusedRef.current = false;
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" ref={containerRef}>
       {/* Search Input */}
       <div className="relative">
         <input
@@ -96,13 +122,13 @@ export default function AutoComplete({ onSelect }) {
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           placeholder={t('search') + ' (שם או ח"פ - לפחות 2 תווים)'}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          disabled={loading}
           autoComplete="off"
         />
         {loading && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
           </div>
         )}
@@ -117,12 +143,19 @@ export default function AutoComplete({ onSelect }) {
 
       {/* Dropdown */}
       {showDropdown && results.length > 0 && (
-        <div className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto">
+        <div 
+          className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-96 overflow-y-auto"
+          onMouseDown={(e) => {
+            // Prevent dropdown from stealing focus from input
+            e.preventDefault();
+          }}
+        >
           {results.map((company, index) => (
             <div
               key={company.id || index}
               onMouseDown={(e) => {
-                e.preventDefault(); // Prevent input from losing focus
+                // Prevent focus loss on click
+                e.preventDefault();
               }}
               onClick={() => handleSelect(company)}
               className="p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 transition-colors"
@@ -130,9 +163,9 @@ export default function AutoComplete({ onSelect }) {
               <div className="font-semibold text-gray-900">
                 {company.name || company.corporationName}
               </div>
-              {company.registrationNumber && (
+              {company.companyNumber && (
                 <div className="text-sm text-gray-600 mt-1">
-                  ח"פ: {company.registrationNumber}
+                  ח"פ: {company.companyNumber}
                 </div>
               )}
               {company.type && (

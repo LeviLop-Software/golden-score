@@ -32,10 +32,9 @@ export async function searchCompanies(query) {
     // If it's a registration number, search specifically in that field
     // Otherwise do a general text search
     if (isRegistrationNumber) {
-      // Search by registration number field
-      params.filters = JSON.stringify({
-        'מספר_רישום': query.trim()
-      });
+      // Try multiple possible field names for registration number
+      // Use general search with the number - API will search across all fields
+      params.q = query.trim();
     } else {
       // General text search
       params.q = query;
@@ -48,22 +47,33 @@ export async function searchCompanies(query) {
       
       // Log first record to see actual field names
       if (records.length > 0) {
-        console.log('Sample API record:', records[0]);
+        console.log('=== API Response Debug ===');
+        console.log('Total records:', records.length);
+        console.log('Sample record fields:', Object.keys(records[0]));
+        console.log('Sample record:', records[0]);
+        console.log('=========================');
       }
 
       // Map to clean structure with all possible field name variations
       return records.map(record => {
-        // Log all keys to debug
-        console.log('Record keys:', Object.keys(record));
         
-        // Try all possible field name variations for registration number
+        // Company Number (ח"פ) - the main identifier
+        const companyNumber = 
+          record['מספר_חברה'] || 
+          record['מס_חברה'] ||
+          record['מספר חברה'] ||
+          record['corporation_number'] || 
+          record.מספר_חברה ||
+          record._id ||
+          '';
+        
+        // Registration Number (מספר רישום) - different from ח"פ
         const registrationNumber = 
           record['מספר_רישום'] || 
           record['מס_רישום'] ||
           record['מספר רישום'] ||
           record['registration_number'] || 
           record.מספר_רישום ||
-          record._id ||
           '';
         
         const corporationName = 
@@ -90,8 +100,9 @@ export async function searchCompanies(query) {
           '';
 
         return {
-          id: registrationNumber || `temp-${Date.now()}-${Math.random()}`,
+          id: companyNumber || registrationNumber || `temp-${Date.now()}-${Math.random()}`,
           name: corporationName,
+          companyNumber,
           registrationNumber,
           corporationName,
           status,

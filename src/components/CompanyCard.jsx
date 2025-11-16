@@ -63,10 +63,18 @@ export default function CompanyCard({ company }) {
 
           {/* Main Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Company Number (ח"פ) */}
+            {company.companyNumber && (
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-500 mb-1">מספר חברה (ח"פ)</span>
+                <span className="text-lg font-bold text-gray-900">{company.companyNumber}</span>
+              </div>
+            )}
+
             {/* Registration Number */}
             {company.registrationNumber && (
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-500 mb-1">מספר רישום (ח"פ)</span>
+                <span className="text-sm font-semibold text-gray-500 mb-1">מספר רישום</span>
                 <span className="text-lg font-bold text-gray-900">{company.registrationNumber}</span>
               </div>
             )}
