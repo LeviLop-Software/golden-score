@@ -1,12 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/src/components/DashboardLayout';
 import AutoComplete from '@/src/components/AutoComplete';
 import CompanyCard from '@/src/components/CompanyCard';
+import CompanyChangesList from '@/src/components/CompanyChangesList';
+import { fetchCompanyChanges } from '@/src/lib/apiClient';
 
 export default function Home() {
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<any>(null);
+  const [companyChanges, setCompanyChanges] = useState<any[]>([]);
+  const [loadingChanges, setLoadingChanges] = useState(false);
+
+  // Fetch company changes when a company is selected
+  useEffect(() => {
+    async function fetchChanges() {
+      if (!selected) {
+        setCompanyChanges([]);
+        return;
+      }
+
+      const companyNumber = selected.companyNumber || selected.registrationNumber || selected.id;
+      
+      if (!companyNumber) {
+        setCompanyChanges([]);
+        return;
+      }
+
+      try {
+        setLoadingChanges(true);
+        const changes = await fetchCompanyChanges(companyNumber);
+        setCompanyChanges(changes);
+      } catch (error) {
+        console.error('Error loading company changes:', error);
+        setCompanyChanges([]);
+      } finally {
+        setLoadingChanges(false);
+      }
+    }
+
+    fetchChanges();
+  }, [selected]);
 
   return (
     <DashboardLayout>
@@ -21,8 +55,9 @@ export default function Home() {
 
         {/* Display selected company card */}
         {selected && (
-          <div className="animate-fadeIn">
+          <div className="animate-fadeIn space-y-6">
             <CompanyCard company={selected} />
+            <CompanyChangesList changes={companyChanges} loading={loadingChanges} />
           </div>
         )}
       </div>

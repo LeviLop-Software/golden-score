@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import CompanyCard from '@/src/components/CompanyCard';
+import CompanyChangesList from '@/src/components/CompanyChangesList';
 import { searchCompanies } from '@/src/services/companyService';
+import { fetchCompanyChanges } from '@/src/lib/apiClient';
 import { useTranslation } from 'react-i18next';
 
 export default function CompanyPage() {
@@ -11,7 +13,9 @@ export default function CompanyPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const [company, setCompany] = useState(null);
+  const [companyChanges, setCompanyChanges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingChanges, setLoadingChanges] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -37,7 +41,20 @@ export default function CompanyPage() {
             c => c.companyNumber === companyId || c.id === companyId
           );
           
-          setCompany(exactMatch || results[0]);
+          const foundCompany = exactMatch || results[0];
+          setCompany(foundCompany);
+          
+          // Fetch company changes
+          setLoadingChanges(true);
+          try {
+            const changes = await fetchCompanyChanges(companyId);
+            setCompanyChanges(changes);
+          } catch (err) {
+            console.error('Error fetching company changes:', err);
+            setCompanyChanges([]);
+          } finally {
+            setLoadingChanges(false);
+          }
         } else {
           setError('חברה לא נמצאה');
         }
@@ -92,7 +109,12 @@ export default function CompanyPage() {
         </button>
 
         {/* Company Card */}
-        {company && <CompanyCard company={company} />}
+        {company && (
+          <div className="space-y-6">
+            <CompanyCard company={company} />
+            <CompanyChangesList changes={companyChanges} loading={loadingChanges} />
+          </div>
+        )}
       </div>
     </div>
   );
