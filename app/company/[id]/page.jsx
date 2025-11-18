@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Head from 'next/head';
 import CompanyCard from '@/src/components/CompanyCard';
 import CompanyChangesList from '@/src/components/CompanyChangesList';
 import CompanyInsolvencyList from '@/src/components/CompanyInsolvencyList';
@@ -24,6 +25,28 @@ export default function CompanyPage() {
   const [loadingInsolvency, setLoadingInsolvency] = useState(false);
   const [loadingTrustee, setLoadingTrustee] = useState(false);
   const [error, setError] = useState(null);
+
+  // Generate meta tags and structured data
+  const generateMetaTags = () => {
+    if (!company) return null;
+    
+    const companyName = company.companyName || company.name || 'חברה';
+    const companyNumber = company.companyNumber || company.id || '';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const pageUrl = `${baseUrl}/company/${companyNumber}`;
+    const title = `${companyName} - בדיקת אמינות | ${process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'}`;
+    const description = `בדוק את האמינות העסקית של ${companyName} (ח.פ ${companyNumber}) - מידע מקיף על שינויים, חדלות פירעון וכונסי נכסים`;
+    
+    return {
+      title,
+      description,
+      pageUrl,
+      companyName,
+      companyNumber,
+    };
+  };
+
+  const metaData = generateMetaTags();
 
   useEffect(() => {
     async function fetchCompany() {
@@ -137,8 +160,53 @@ export default function CompanyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-12 px-4" dir="rtl">
-      <div className="max-w-6xl mx-auto">
+    <>
+      {/* Meta Tags for SEO and Social Sharing */}
+      {metaData && (
+        <Head>
+          <title>{metaData.title}</title>
+          <meta name="description" content={metaData.description} />
+          
+          {/* Open Graph / Facebook */}
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={metaData.pageUrl} />
+          <meta property="og:title" content={metaData.title} />
+          <meta property="og:description" content={metaData.description} />
+          <meta property="og:site_name" content={process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'} />
+          
+          {/* Twitter */}
+          <meta property="twitter:card" content="summary_large_image" />
+          <meta property="twitter:url" content={metaData.pageUrl} />
+          <meta property="twitter:title" content={metaData.title} />
+          <meta property="twitter:description" content={metaData.description} />
+          
+          {/* Canonical URL */}
+          <link rel="canonical" href={metaData.pageUrl} />
+        </Head>
+      )}
+      
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-12 px-4" dir="rtl">
+        {/* Schema.org JSON-LD Structured Data */}
+        {metaData && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                name: metaData.companyName,
+                identifier: metaData.companyNumber,
+                url: metaData.pageUrl,
+                address: {
+                  '@type': 'PostalAddress',
+                  addressCountry: 'IL',
+                },
+              }),
+            }}
+          />
+        )}
+        
+        <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <button
           onClick={() => router.push('/')}
@@ -174,7 +242,8 @@ export default function CompanyPage() {
             )}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

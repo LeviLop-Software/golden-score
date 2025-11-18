@@ -40,6 +40,17 @@ export default function Home() {
     }
   };
 
+  // Handle removing a company from history
+  const handleRemoveFromHistory = (e: React.MouseEvent, companyToRemove: any) => {
+    e.stopPropagation(); // Prevent navigation
+    const companyId = companyToRemove.companyNumber || companyToRemove.registrationNumber || companyToRemove.id;
+    const newHistory = searchHistory.filter((item: any) => 
+      (item.companyNumber || item.registrationNumber || item.id) !== companyId
+    );
+    setSearchHistory(newHistory);
+    localStorage.setItem('companySearchHistory', JSON.stringify(newHistory));
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -64,23 +75,37 @@ export default function Home() {
               <h3 className="text-sm font-semibold text-gray-700 mb-3">חיפושים אחרונים</h3>
               <div className="space-y-2">
                 {searchHistory.map((company: any, index: number) => (
-                  <button
+                  <div
                     key={index}
-                    onClick={() => handleCompanySelect(company)}
-                    className="w-full text-right px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200 hover:border-gray-300"
+                    className="relative group"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{company.companyName || company.name}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          ח.פ: {company.companyNumber || company.registrationNumber || company.id}
-                        </p>
+                    <button
+                      onClick={() => handleCompanySelect(company)}
+                      className="w-full text-right px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200 hover:border-gray-300"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{company.companyName || company.name}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            ח.פ: {company.companyNumber || company.registrationNumber || company.id}
+                          </p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </button>
+                    {/* Delete button */}
+                    <button
+                      onClick={(e) => handleRemoveFromHistory(e, company)}
+                      className="absolute top-2 left-2 p-1.5 bg-white hover:bg-red-50 rounded-full border border-gray-200 hover:border-red-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm"
+                      title="הסר מההיסטוריה"
+                    >
+                      <svg className="w-4 h-4 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
