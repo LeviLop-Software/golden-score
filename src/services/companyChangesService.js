@@ -5,7 +5,7 @@ import { searchRecords } from './dataGovService';
  * Handles fetching and filtering company change history from ICA data source
  */
 
-const RESOURCE_ID = '28780ab5-3ef1-44c7-8377-da82c0aa6781';
+const RESOURCE_ID = process.env.RESOURCE_ID_CHANGES || '28780ab5-3ef1-44c7-8377-da82c0aa6781';
 
 /**
  * Get company changes history by company number

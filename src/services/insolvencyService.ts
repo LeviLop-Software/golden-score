@@ -3,6 +3,11 @@
  * Fetches insolvency case data from Israeli Ministry of Justice API
  */
 
+const JUSTICE_API_URL = process.env.JUSTICE_API_URL || 'https://api.justice.gov.il/InsolvencyPublicData/GetData';
+const CACHE_DURATION = (parseInt(process.env.CACHE_TTL_JUSTICE || '86400') * 1000); // Convert seconds to milliseconds
+const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
+const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
+
 interface InsolvencyOrder {
   orderType: string;
   date: string | null;
@@ -59,7 +64,6 @@ interface CacheEntry {
 }
 
 const cache = new Map<string, CacheEntry>();
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 /**
  * Normalize a date string to ISO format or return null
@@ -144,17 +148,19 @@ export async function getInsolvencyCases(debtorNumber: string): Promise<Insolven
   }
 
   // Check cache
-  const cached = cache.get(normalizedDebtorNumber);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    console.log(`[Insolvency] Cache hit for debtor ${normalizedDebtorNumber}`);
-    return cached.data;
+  if (ENABLE_CACHE) {
+    const cached = cache.get(normalizedDebtorNumber);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      if (ENABLE_DEBUG) console.log(`[Insolvency] Cache hit for debtor ${normalizedDebtorNumber}`);
+      return cached.data;
+    }
   }
 
-  console.log(`[Insolvency] Fetching data for debtor ${normalizedDebtorNumber}`);
+  if (ENABLE_DEBUG) console.log(`[Insolvency] Fetching data for debtor ${normalizedDebtorNumber}`);
 
   try {
     // Call the API
-    const response = await fetch('https://api.justice.gov.il/InsolvencyPublicData/GetData', {
+    const response = await fetch(JUSTICE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -223,9 +229,11 @@ export async function getInsolvencyCases(debtorNumber: string): Promise<Insolven
     };
 
     // Cache the result
-    cache.set(normalizedDebtorNumber, { data: result, timestamp: Date.now() });
+    if (ENABLE_CACHE) {
+      cache.set(normalizedDebtorNumber, { data: result, timestamp: Date.now() });
+    }
 
-    console.log(`[Insolvency] Found ${result.caseCount} cases for debtor ${normalizedDebtorNumber}`);
+    if (ENABLE_DEBUG) console.log(`[Insolvency] Found ${result.caseCount} cases for debtor ${normalizedDebtorNumber}`);
 
     return result;
 

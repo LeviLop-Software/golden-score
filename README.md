@@ -2,6 +2,26 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### 1. Environment Setup
+
+The project uses a `.env.local` file for configuration. It's already created with all necessary settings.
+
+You can modify these key variables:
+- **API URLs**: `DATA_GOV_API_URL`, `JUSTICE_API_URL`
+- **Resource IDs**: `RESOURCE_ID_COMPANIES`, `RESOURCE_ID_CHANGES`, `RESOURCE_ID_LIQUIDATED`, `RESOURCE_ID_DEBTORS`, `RESOURCE_ID_CLAIMS`
+- **Caching**: `CACHE_TTL_DATA_GOV`, `CACHE_TTL_JUSTICE`, `CACHE_TTL_TRUSTEE`, `ENABLE_CACHE`
+- **Debug**: `ENABLE_DEBUG_LOGS` - Show debug logs in console
+
+See `.env.local` for detailed comments about each variable.
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Run Development Server
+
 First, run the development server:
 
 ```bash

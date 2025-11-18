@@ -5,8 +5,10 @@ import axios from 'axios';
  * Handles fetching large datasets with pagination and caching
  */
 
-const GOV_IL_API = 'https://data.gov.il/api/3/action/datastore_search';
-const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+const GOV_IL_API = `${process.env.DATA_GOV_API_URL || 'https://data.gov.il/api/3/action'}/datastore_search`;
+const CACHE_DURATION = (process.env.CACHE_TTL_DATA_GOV || 3600) * 1000; // Convert seconds to milliseconds
+const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
+const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 
 // In-memory cache
 const cache = new Map();
@@ -23,10 +25,12 @@ export async function searchRecords(resourceId, query, maxRecords = 1000) {
   const cacheKey = `search_${resourceId}_${query}`;
   
   // Check cache
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    console.log(`[DataGov] Using cached search results for "${query}" (${cached.data.length} records)`);
-    return cached.data;
+  if (ENABLE_CACHE) {
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      if (ENABLE_DEBUG) console.log(`[DataGov] Using cached search results for "${query}" (${cached.data.length} records)`);
+      return cached.data;
+    }
   }
 
   console.log(`[DataGov] Searching "${query}" in ${resourceId}...`);

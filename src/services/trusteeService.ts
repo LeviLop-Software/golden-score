@@ -26,15 +26,19 @@
 
 import { searchRecords } from './dataGovService';
 
+// Environment variables
+const CACHE_DURATION = (parseInt(process.env.CACHE_TTL_TRUSTEE || '86400') * 1000); // Convert seconds to milliseconds
+const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
+const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
+
 // Resource IDs ממאגר PR2018
 const RESOURCE_IDS = {
-  LIQUIDATED_COMPANIES: 'd8715392-287f-49b7-9ae3-f21ec5bf55f3', // חברות בפירוק - יש ח.פ
-  BANKRUPTCY_DEBTORS: '2156937e-524a-4511-907d-5470a6a5264f',   // חייבים בהליך - אין ח.פ, יש מזהה תיק
-  DEBT_CLAIMS: '3cb25b2e-a501-4870-86a6-30be8d8e80a5',          // תביעות חוב - אין ח.פ, יש מזהה תיק
-} as const;
+  LIQUIDATED_COMPANIES: process.env.RESOURCE_ID_LIQUIDATED || 'd8715392-287f-49b7-9ae3-f21ec5bf55f3', // חברות בפירוק - יש ח.פ
+  BANKRUPTCY_DEBTORS: process.env.RESOURCE_ID_DEBTORS || '2156937e-524a-4511-907d-5470a6a5264f',   // חייבים בהליך - אין ח.פ, יש מזהה תיק
+  DEBT_CLAIMS: process.env.RESOURCE_ID_CLAIMS || '3cb25b2e-a501-4870-86a6-30be8d8e80a5',          // תביעות חוב - אין ח.פ, יש מזהה תיק
+};
 
 // Cache
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 שעות
 const cache = new Map<string, { data: TrusteeData; timestamp: number }>();
 
 /**
@@ -171,13 +175,15 @@ export async function getTrusteeData(companyId: string): Promise<TrusteeData> {
 
   // בדיקת cache
   const cacheKey = `trustee_${normalizedId}`;
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    console.log(`[Trustee] Using cache for company ${normalizedId}`);
-    return cached.data;
+  if (ENABLE_CACHE) {
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      if (ENABLE_DEBUG) console.log(`[Trustee] Using cache for company ${normalizedId}`);
+      return cached.data;
+    }
   }
 
-  console.log(`[Trustee] Fetching data for company ${normalizedId}`);
+  if (ENABLE_DEBUG) console.log(`[Trustee] Fetching data for company ${normalizedId}`);
 
   try {
     // שלב 1: חיפוש ראשוני בחברות בפירוק (חיפוש ישיר לפי ח.פ)
@@ -186,14 +192,14 @@ export async function getTrusteeData(companyId: string): Promise<TrusteeData> {
       normalizedId, 
       1000 // מספיק למצוא את החברה הספציפית
     );
-    console.log(`[Trustee] Found ${liquidationRecords.length} liquidation records`);
+    if (ENABLE_DEBUG) console.log(`[Trustee] Found ${liquidationRecords.length} liquidation records`);
 
     const matchingLiquidation = liquidationRecords.filter((r: any) => {
       const companyIdFromRecord = getField(r, ['מספר זיהוי של החברה']);
       return companyIdFromRecord && String(companyIdFromRecord).trim() === normalizedId;
     });
 
-    console.log(`[Trustee] Found ${matchingLiquidation.length} liquidation records for company ${normalizedId}`);
+    if (ENABLE_DEBUG) console.log(`[Trustee] Found ${matchingLiquidation.length} liquidation records for company ${normalizedId}`);
 
     // איסוף מזהי תיק מרשומות הפירוק
     const fileIds = new Set<string>();
