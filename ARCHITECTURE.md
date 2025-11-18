@@ -351,6 +351,7 @@ https://data.gov.il/api/3/action/datastore_search?resource_id=3cb25b2e-a501-4870
 - **Empty State**: הודעה כשאין תוצאות
 - **Keyboard Navigation**: ניווט במקלדת
 - **RTL Support**: עיצוב מותאם לעברית
+- **Search History**: שמירת 5MAX_SEARCH_HISTORY חיפושים אחרונים ב-localStorage
 
 ---
 

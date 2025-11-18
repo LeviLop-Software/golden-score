@@ -1,82 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/src/components/DashboardLayout';
 import AutoComplete from '@/src/components/AutoComplete';
-import CompanyCard from '@/src/components/CompanyCard';
-import CompanyChangesList from '@/src/components/CompanyChangesList';
-import CompanyInsolvencyList from '@/src/components/CompanyInsolvencyList';
-import TrusteeCard from '@/src/components/TrusteeCard';
-import SkeletonCard from '@/src/components/SkeletonCard';
-import { fetchCompanyChanges, fetchCompanyInsolvency, fetchCompanyTrustee } from '@/src/lib/apiClient';
+
+const MAX_SEARCH_HISTORY = 5;
 
 export default function Home() {
-  const [selected, setSelected] = useState<any>(null);
-  const [companyChanges, setCompanyChanges] = useState<any[]>([]);
-  const [loadingChanges, setLoadingChanges] = useState(false);
-  const [insolvencyData, setInsolvencyData] = useState<any>(null);
-  const [loadingInsolvency, setLoadingInsolvency] = useState(false);
-  const [trusteeData, setTrusteeData] = useState<any>(null);
-  const [loadingTrustee, setLoadingTrustee] = useState(false);
+  const router = useRouter();
+  const [searchHistory, setSearchHistory] = useState<any[]>([]);
 
-  // Fetch company changes, insolvency, and trustee data when a company is selected
+  // Load search history from localStorage on mount
   useEffect(() => {
-    async function fetchData() {
-      if (!selected) {
-        setCompanyChanges([]);
-        setInsolvencyData(null);
-        setTrusteeData(null);
-        return;
-      }
-
-      const companyNumber = selected.companyNumber || selected.registrationNumber || selected.id;
-      
-      if (!companyNumber) {
-        setCompanyChanges([]);
-        setInsolvencyData(null);
-        setTrusteeData(null);
-        return;
-      }
-
-      // Fetch changes
-      try {
-        setLoadingChanges(true);
-        const changes = await fetchCompanyChanges(companyNumber);
-        setCompanyChanges(changes);
-      } catch (error) {
-        console.error('Error loading company changes:', error);
-        setCompanyChanges([]);
-      } finally {
-        setLoadingChanges(false);
-      }
-
-      // Fetch insolvency data
-      try {
-        setLoadingInsolvency(true);
-        const data = await fetchCompanyInsolvency(companyNumber);
-        setInsolvencyData(data);
-      } catch (error) {
-        console.error('Error loading insolvency data:', error);
-        setInsolvencyData({ caseCount: 0, cases: [] });
-      } finally {
-        setLoadingInsolvency(false);
-      }
-
-      // Fetch trustee data
-      try {
-        setLoadingTrustee(true);
-        const data = await fetchCompanyTrustee(companyNumber);
-        setTrusteeData(data);
-      } catch (error) {
-        console.error('Error loading trustee data:', error);
-        setTrusteeData(null);
-      } finally {
-        setLoadingTrustee(false);
-      }
+    const history = localStorage.getItem('companySearchHistory');
+    if (history) {
+      setSearchHistory(JSON.parse(history));
     }
+  }, []);
 
-    fetchData();
-  }, [selected]);
+  // Handle company selection and update history
+  const handleCompanySelect = (company: any) => {
+    if (company) {
+      // Update search history
+      const newHistory = [
+        company,
+        ...searchHistory.filter((item: any) => 
+          (item.companyNumber || item.registrationNumber || item.id) !== 
+          (company.companyNumber || company.registrationNumber || company.id)
+        )
+      ].slice(0, MAX_SEARCH_HISTORY);
+      
+      setSearchHistory(newHistory);
+      localStorage.setItem('companySearchHistory', JSON.stringify(newHistory));
+      
+      // Navigate to company page
+      const companyId = company.companyNumber || company.registrationNumber || company.id;
+      router.push(`/company/${companyId}`);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -94,36 +56,36 @@ export default function Home() {
           <p className="text-gray-600 mb-6">
             חפש חברות ישראליות לפי שם, מספר רישום או מילות מפתח
           </p>
-          <AutoComplete onSelect={setSelected} />
+          <AutoComplete onSelect={handleCompanySelect} />
+          
+          {/* Search History */}
+          {searchHistory.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">חיפושים אחרונים</h3>
+              <div className="space-y-2">
+                {searchHistory.map((company: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => handleCompanySelect(company)}
+                    className="w-full text-right px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200 hover:border-gray-300"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{company.companyName || company.name}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          ח.פ: {company.companyNumber || company.registrationNumber || company.id}
+                        </p>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Display selected company card */}
-        {selected && (
-          <div className="animate-fadeIn space-y-6">
-            <CompanyCard company={selected} />
-            
-            {/* Changes - show skeleton or data */}
-            {loadingChanges ? (
-              <SkeletonCard type="list" />
-            ) : (
-              <CompanyChangesList changes={companyChanges} loading={false} />
-            )}
-            
-            {/* Insolvency - show skeleton or data */}
-            {loadingInsolvency ? (
-              <SkeletonCard type="list" />
-            ) : (
-              <CompanyInsolvencyList insolvencyData={insolvencyData} loading={false} />
-            )}
-            
-            {/* Trustee - show skeleton or data */}
-            {loadingTrustee ? (
-              <SkeletonCard type="trustee" />
-            ) : (
-              trusteeData && <TrusteeCard companyId={trusteeData.companyId} />
-            )}
-          </div>
-        )}
       </div>
     </DashboardLayout>
   );
