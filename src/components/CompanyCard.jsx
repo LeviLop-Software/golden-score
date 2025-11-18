@@ -150,12 +150,12 @@ export default function CompanyCard({ company }) {
           </div>
         </div>
 
-        {/* Score Circle - Always on Side */}
+        {/* Score Circle - Always on Side with Golden theme */}
         <div className="flex items-center justify-center w-40 sm:w-48 lg:w-64 shrink-0">
-          <div className={`relative flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full border-6 lg:border-8 ${scoreBorderColor} ${scoreBgColor}`}>
+          <div className={`relative flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full border-6 lg:border-8 ${scoreBorderColor} ${scoreBgColor} shadow-lg`}>
             <div className="text-center">
               <div className={`text-3xl sm:text-4xl lg:text-5xl font-bold ${scoreColor}`}>{score}</div>
-              <div className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">ציון כללי</div>
+              <div className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">ציון</div>
             </div>
           </div>
         </div>

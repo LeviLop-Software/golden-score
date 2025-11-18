@@ -81,6 +81,14 @@ export default function Home() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Header with Golden Score branding */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-3">
+            <span className="bg-linear-to-r from-yellow-500 via-amber-500 to-yellow-600 bg-clip-text text-transparent">Golden Score</span>
+          </h1>
+          <p className="text-gray-600 text-lg">מערכת בדיקת אמינות חברות מתקדמת</p>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-2xl font-bold mb-4">חיפוש חברות</h2>
           <p className="text-gray-600 mb-6">
