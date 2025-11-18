@@ -1,7 +1,5 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
-
 /**
  * DashboardLayout Component
  * TODO: Implement sidebar/navigation
@@ -9,8 +7,6 @@ import { useTranslation } from 'react-i18next';
  * TODO: Add responsive layout
  */
 export default function DashboardLayout({ children }) {
-  const { t } = useTranslation();
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}

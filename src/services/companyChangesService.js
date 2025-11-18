@@ -6,6 +6,7 @@ import { searchRecords } from './dataGovService';
  */
 
 const RESOURCE_ID = process.env.RESOURCE_ID_CHANGES || '28780ab5-3ef1-44c7-8377-da82c0aa6781';
+const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 
 /**
  * Get company changes history by company number
@@ -25,13 +26,13 @@ export async function getCompanyChanges(companyNumber) {
     const allRecords = await searchRecords(RESOURCE_ID, normalizedCompanyNumber, 5000);
     
     if (allRecords.length === 0) {
-      console.log('[CompanyChanges] No records found for company', normalizedCompanyNumber);
+      if (ENABLE_DEBUG) console.log('[CompanyChanges] No records found for company', normalizedCompanyNumber);
       return [];
     }
 
     // Log field names from first record for debugging
     if (allRecords.length > 0) {
-      console.log('[CompanyChanges] Available fields:', Object.keys(allRecords[0]));
+      if (ENABLE_DEBUG) console.log('[CompanyChanges] Available fields:', Object.keys(allRecords[0]));
     }
 
     // סינון נוסף במידת הצורך (לפעמים החיפוש מחזיר יותר ממה שצריך)
@@ -52,7 +53,7 @@ export async function getCompanyChanges(companyNumber) {
       return String(recordCompanyNumber).trim() === normalizedCompanyNumber;
     });
 
-    console.log(`[CompanyChanges] Found ${filteredRecords.length} changes for company ${companyNumber}`);
+    if (ENABLE_DEBUG) console.log(`[CompanyChanges] Found ${filteredRecords.length} changes for company ${companyNumber}`);
 
     // Map to clean structure
     const changes = filteredRecords.map(record => {

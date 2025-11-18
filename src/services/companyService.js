@@ -7,6 +7,7 @@ import axios from 'axios';
 
 const GOV_IL_API = 'https://data.gov.il/api/3/action/datastore_search';
 const RESOURCE_ID = process.env.RESOURCE_ID_COMPANIES || 'f004176c-b85f-4542-8901-7b3176f9a054';
+const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 
 /**
  * Search for companies using data.gov.il API
@@ -46,7 +47,7 @@ export async function searchCompanies(query) {
       const records = response.data.result.records;
       
       // Log first record to see actual field names
-      if (records.length > 0) {
+      if (ENABLE_DEBUG && records.length > 0) {
         console.log('=== API Response Debug ===');
         console.log('Total records:', records.length);
         console.log('Sample record fields:', Object.keys(records[0]));
