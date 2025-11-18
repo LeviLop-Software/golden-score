@@ -4,8 +4,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import CompanyCard from '@/src/components/CompanyCard';
 import CompanyChangesList from '@/src/components/CompanyChangesList';
+import CompanyInsolvencyList from '@/src/components/CompanyInsolvencyList';
+import TrusteeCard from '@/src/components/TrusteeCard';
+import SkeletonCard from '@/src/components/SkeletonCard';
 import { searchCompanies } from '@/src/services/companyService';
-import { fetchCompanyChanges } from '@/src/lib/apiClient';
+import { fetchCompanyChanges, fetchCompanyInsolvency, fetchCompanyTrustee } from '@/src/lib/apiClient';
 import { useTranslation } from 'react-i18next';
 
 export default function CompanyPage() {
@@ -14,8 +17,12 @@ export default function CompanyPage() {
   const { t } = useTranslation();
   const [company, setCompany] = useState(null);
   const [companyChanges, setCompanyChanges] = useState([]);
+  const [insolvencyData, setInsolvencyData] = useState(null);
+  const [trusteeData, setTrusteeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingChanges, setLoadingChanges] = useState(false);
+  const [loadingInsolvency, setLoadingInsolvency] = useState(false);
+  const [loadingTrustee, setLoadingTrustee] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -55,6 +62,30 @@ export default function CompanyPage() {
           } finally {
             setLoadingChanges(false);
           }
+
+          // Fetch insolvency data
+          setLoadingInsolvency(true);
+          try {
+            const data = await fetchCompanyInsolvency(companyId);
+            setInsolvencyData(data);
+          } catch (err) {
+            console.error('Error fetching insolvency data:', err);
+            setInsolvencyData({ caseCount: 0, cases: [] });
+          } finally {
+            setLoadingInsolvency(false);
+          }
+
+          // Fetch trustee data
+          setLoadingTrustee(true);
+          try {
+            const data = await fetchCompanyTrustee(companyId);
+            setTrusteeData(data);
+          } catch (err) {
+            console.error('Error fetching trustee data:', err);
+            setTrusteeData(null);
+          } finally {
+            setLoadingTrustee(false);
+          }
         } else {
           setError('חברה לא נמצאה');
         }
@@ -71,10 +102,18 @@ export default function CompanyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-700">טוען פרטי חברה...</p>
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-12 px-4" dir="rtl">
+        <div className="max-w-6xl mx-auto">
+          {/* Back Button Skeleton */}
+          <div className="mb-6 h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
+          
+          {/* Skeletons */}
+          <div className="space-y-6">
+            <SkeletonCard type="company" />
+            <SkeletonCard type="list" />
+            <SkeletonCard type="list" />
+            <SkeletonCard type="trustee" />
+          </div>
         </div>
       </div>
     );
@@ -112,7 +151,27 @@ export default function CompanyPage() {
         {company && (
           <div className="space-y-6">
             <CompanyCard company={company} />
-            <CompanyChangesList changes={companyChanges} loading={loadingChanges} />
+            
+            {/* Changes - show skeleton or data */}
+            {loadingChanges ? (
+              <SkeletonCard type="list" />
+            ) : (
+              <CompanyChangesList changes={companyChanges} loading={false} />
+            )}
+            
+            {/* Insolvency - show skeleton or data */}
+            {loadingInsolvency ? (
+              <SkeletonCard type="list" />
+            ) : (
+              <CompanyInsolvencyList insolvencyData={insolvencyData} loading={false} />
+            )}
+            
+            {/* Trustee - show skeleton or data */}
+            {loadingTrustee ? (
+              <SkeletonCard type="trustee" />
+            ) : (
+              trusteeData && <TrusteeCard companyId={trusteeData.companyId} />
+            )}
           </div>
         )}
       </div>

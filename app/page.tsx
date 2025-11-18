@@ -5,18 +5,27 @@ import DashboardLayout from '@/src/components/DashboardLayout';
 import AutoComplete from '@/src/components/AutoComplete';
 import CompanyCard from '@/src/components/CompanyCard';
 import CompanyChangesList from '@/src/components/CompanyChangesList';
-import { fetchCompanyChanges } from '@/src/lib/apiClient';
+import CompanyInsolvencyList from '@/src/components/CompanyInsolvencyList';
+import TrusteeCard from '@/src/components/TrusteeCard';
+import SkeletonCard from '@/src/components/SkeletonCard';
+import { fetchCompanyChanges, fetchCompanyInsolvency, fetchCompanyTrustee } from '@/src/lib/apiClient';
 
 export default function Home() {
   const [selected, setSelected] = useState<any>(null);
   const [companyChanges, setCompanyChanges] = useState<any[]>([]);
   const [loadingChanges, setLoadingChanges] = useState(false);
+  const [insolvencyData, setInsolvencyData] = useState<any>(null);
+  const [loadingInsolvency, setLoadingInsolvency] = useState(false);
+  const [trusteeData, setTrusteeData] = useState<any>(null);
+  const [loadingTrustee, setLoadingTrustee] = useState(false);
 
-  // Fetch company changes when a company is selected
+  // Fetch company changes, insolvency, and trustee data when a company is selected
   useEffect(() => {
-    async function fetchChanges() {
+    async function fetchData() {
       if (!selected) {
         setCompanyChanges([]);
+        setInsolvencyData(null);
+        setTrusteeData(null);
         return;
       }
 
@@ -24,9 +33,12 @@ export default function Home() {
       
       if (!companyNumber) {
         setCompanyChanges([]);
+        setInsolvencyData(null);
+        setTrusteeData(null);
         return;
       }
 
+      // Fetch changes
       try {
         setLoadingChanges(true);
         const changes = await fetchCompanyChanges(companyNumber);
@@ -37,9 +49,33 @@ export default function Home() {
       } finally {
         setLoadingChanges(false);
       }
+
+      // Fetch insolvency data
+      try {
+        setLoadingInsolvency(true);
+        const data = await fetchCompanyInsolvency(companyNumber);
+        setInsolvencyData(data);
+      } catch (error) {
+        console.error('Error loading insolvency data:', error);
+        setInsolvencyData({ caseCount: 0, cases: [] });
+      } finally {
+        setLoadingInsolvency(false);
+      }
+
+      // Fetch trustee data
+      try {
+        setLoadingTrustee(true);
+        const data = await fetchCompanyTrustee(companyNumber);
+        setTrusteeData(data);
+      } catch (error) {
+        console.error('Error loading trustee data:', error);
+        setTrusteeData(null);
+      } finally {
+        setLoadingTrustee(false);
+      }
     }
 
-    fetchChanges();
+    fetchData();
   }, [selected]);
 
   return (
@@ -57,7 +93,27 @@ export default function Home() {
         {selected && (
           <div className="animate-fadeIn space-y-6">
             <CompanyCard company={selected} />
-            <CompanyChangesList changes={companyChanges} loading={loadingChanges} />
+            
+            {/* Changes - show skeleton or data */}
+            {loadingChanges ? (
+              <SkeletonCard type="list" />
+            ) : (
+              <CompanyChangesList changes={companyChanges} loading={false} />
+            )}
+            
+            {/* Insolvency - show skeleton or data */}
+            {loadingInsolvency ? (
+              <SkeletonCard type="list" />
+            ) : (
+              <CompanyInsolvencyList insolvencyData={insolvencyData} loading={false} />
+            )}
+            
+            {/* Trustee - show skeleton or data */}
+            {loadingTrustee ? (
+              <SkeletonCard type="trustee" />
+            ) : (
+              trusteeData && <TrusteeCard companyId={trusteeData.companyId} />
+            )}
           </div>
         )}
       </div>

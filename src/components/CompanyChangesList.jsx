@@ -1,10 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+
 /**
  * CompanyChangesList Component
  * Displays a list of company changes in a clean card format
  */
 export default function CompanyChangesList({ changes, loading = false }) {
+  const [isExpanded, setIsExpanded] = useState(true);
   if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
@@ -28,9 +32,21 @@ export default function CompanyChangesList({ changes, loading = false }) {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200" dir="rtl">
-      <h3 className="text-2xl font-bold text-gray-900 mb-6">שינויים על החברה</h3>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between cursor-pointer mb-6 hover:opacity-80 transition-opacity"
+      >
+        <h3 className="text-2xl font-bold text-gray-900">שינויים על החברה</h3>
+        <ChevronDown 
+          size={28} 
+          className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+        />
+      </button>
       
-      <div className="space-y-0">
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+        isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
+      }`}>
+        <div className="space-y-0">
         {changes.map((change, index) => (
           <div 
             key={index}
@@ -56,13 +72,14 @@ export default function CompanyChangesList({ changes, loading = false }) {
             )}
           </div>
         ))}
-      </div>
-      
-      {/* Footer with count */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <p className="text-sm text-gray-500">
-          סך הכל {changes.length} שינויים
-        </p>
+        </div>
+        
+        {/* Footer with count */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-500">
+            סך הכל {changes.length} שינויים
+          </p>
+        </div>
       </div>
     </div>
   );

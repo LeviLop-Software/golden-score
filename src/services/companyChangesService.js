@@ -1,4 +1,4 @@
-import { fetchAllRecords } from './dataGovService';
+import { searchRecords } from './dataGovService';
 
 /**
  * Company Changes Service
@@ -18,11 +18,14 @@ export async function getCompanyChanges(companyNumber) {
   }
 
   try {
-    // Fetch all records (will use cache if available)
-    const allRecords = await fetchAllRecords(RESOURCE_ID);
+    // Normalize company number for comparison
+    const normalizedCompanyNumber = String(companyNumber).trim();
+
+    // חיפוש ישיר לפי מספר חברה במקום שאיבת כל המאגר
+    const allRecords = await searchRecords(RESOURCE_ID, normalizedCompanyNumber, 5000);
     
     if (allRecords.length === 0) {
-      console.log('[CompanyChanges] No records fetched from API');
+      console.log('[CompanyChanges] No records found for company', normalizedCompanyNumber);
       return [];
     }
 
@@ -31,10 +34,7 @@ export async function getCompanyChanges(companyNumber) {
       console.log('[CompanyChanges] Available fields:', Object.keys(allRecords[0]));
     }
 
-    // Normalize company number for comparison
-    const normalizedCompanyNumber = String(companyNumber).trim();
-
-    // Filter records by company number
+    // סינון נוסף במידת הצורך (לפעמים החיפוש מחזיר יותר ממה שצריך)
     const filteredRecords = allRecords.filter(record => {
       // Try multiple field name variations
       const recordCompanyNumber = 

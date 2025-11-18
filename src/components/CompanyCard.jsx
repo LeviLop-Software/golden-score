@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileDown } from 'lucide-react';
+import { FileDown, ChevronDown, Copy, Check } from 'lucide-react';
 import { exportCompanyPdf } from '../lib/pdf';
 
 /**
@@ -10,10 +11,22 @@ import { exportCompanyPdf } from '../lib/pdf';
  */
 export default function CompanyCard({ company }) {
   const { t } = useTranslation();
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   if (!company) {
     return null;
   }
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(company.companyNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Error copying:', error);
+    }
+  };
 
   // Calculate a mock score (0-100) based on available data
   // TODO: Replace with actual scoring algorithm
@@ -45,10 +58,10 @@ export default function CompanyCard({ company }) {
   const businessField = company._raw?.['תחום'] || company._raw?.['ענף'] || '';
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200" dir="rtl">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 lg:p-8 border border-gray-200" dir="rtl">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Right Side - Company Info */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="border-b border-gray-200 pb-4">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -63,11 +76,24 @@ export default function CompanyCard({ company }) {
 
           {/* Main Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Company Number (ח"פ) */}
+            {/* Company Number (ח"פ) with Copy Button */}
             {company.companyNumber && (
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-gray-500 mb-1">מספר חברה (ח"פ)</span>
-                <span className="text-lg font-bold text-gray-900">{company.companyNumber}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-gray-900">{company.companyNumber}</span>
+                  <button
+                    onClick={handleCopy}
+                    className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                    title="העתק מספר ח.פ"
+                  >
+                    {copied ? (
+                      <Check size={16} className="text-green-600" />
+                    ) : (
+                      <Copy size={16} className="text-gray-600" />
+                    )}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -113,47 +139,60 @@ export default function CompanyCard({ company }) {
           </div>
 
           {/* Export PDF Button */}
-          <div className="pt-4">
+          <div className="pt-2 sm:pt-4">
             <button
               onClick={handleExportPdf}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
             >
-              <FileDown size={20} />
+              <FileDown size={18} className="sm:w-5 sm:h-5" />
               <span>{t('exportPdf')}</span>
             </button>
           </div>
         </div>
 
-        {/* Left Side - Score Circle */}
-        <div className="flex items-center justify-center lg:w-64">
-          <div className={`relative flex items-center justify-center w-48 h-48 rounded-full border-8 ${scoreBorderColor} ${scoreBgColor}`}>
+        {/* Score Circle - Always on Side */}
+        <div className="flex items-center justify-center w-40 sm:w-48 lg:w-64 shrink-0">
+          <div className={`relative flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full border-6 lg:border-8 ${scoreBorderColor} ${scoreBgColor}`}>
             <div className="text-center">
-              <div className={`text-5xl font-bold ${scoreColor}`}>{score}</div>
-              <div className="text-sm font-semibold text-gray-600 mt-1">ציון כללי</div>
+              <div className={`text-3xl sm:text-4xl lg:text-5xl font-bold ${scoreColor}`}>{score}</div>
+              <div className="text-xs sm:text-sm font-semibold text-gray-600 mt-1">ציון כללי</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Additional Raw Data (Collapsible) */}
+      {/* Additional Raw Data (Animated Accordion) */}
       {company._raw && Object.keys(company._raw).length > 5 && (
-        <details className="mt-6 pt-6 border-t border-gray-200">
-          <summary className="cursor-pointer font-semibold text-gray-700 hover:text-gray-900">
-            פרטים נוספים מרשם החברות
-          </summary>
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            {Object.entries(company._raw).map(([key, value]) => {
-              // Skip internal fields and already displayed fields
-              if (key.startsWith('_') || !value) return null;
-              return (
-                <div key={key} className="flex gap-2 py-1">
-                  <span className="font-medium text-gray-600 min-w-[120px]">{key}:</span>
-                  <span className="text-gray-900">{String(value)}</span>
-                </div>
-              );
-            })}
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="w-full flex items-center justify-between cursor-pointer font-semibold text-gray-700 hover:text-gray-900 transition-colors p-3 rounded-lg hover:bg-gray-50"
+          >
+            <span className="text-lg">פרטים נוספים מרשם החברות</span>
+            <ChevronDown 
+              size={24} 
+              className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          </button>
+          <div 
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              isExpanded ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              {Object.entries(company._raw).map(([key, value]) => {
+                // Skip internal fields and already displayed fields
+                if (key.startsWith('_') || !value) return null;
+                return (
+                  <div key={key} className="flex gap-2 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <span className="font-medium text-gray-600 min-w-[120px]">{key}:</span>
+                    <span className="text-gray-900">{String(value)}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </details>
+        </div>
       )}
     </div>
   );

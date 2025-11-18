@@ -12,7 +12,75 @@ const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
 const cache = new Map();
 
 /**
+ * Search records in a data.gov.il resource by query
+ * אופטימיזציה: חיפוש ישיר במקום שאיבת כל המאגר
+ * @param {string} resourceId - The data.gov.il resource ID
+ * @param {string} query - Search query (e.g., company number)
+ * @param {number} maxRecords - Maximum records to fetch (default: 1000)
+ * @returns {Promise<Array>} Matching records
+ */
+export async function searchRecords(resourceId, query, maxRecords = 1000) {
+  const cacheKey = `search_${resourceId}_${query}`;
+  
+  // Check cache
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log(`[DataGov] Using cached search results for "${query}" (${cached.data.length} records)`);
+    return cached.data;
+  }
+
+  console.log(`[DataGov] Searching "${query}" in ${resourceId}...`);
+  
+  try {
+    const allRecords = [];
+    let offset = 0;
+    const limit = Math.min(maxRecords, 32000); // Max limit per request
+    let hasMore = true;
+
+    while (hasMore && allRecords.length < maxRecords) {
+      const params = {
+        resource_id: resourceId,
+        q: query, // חיפוש ישיר
+        limit,
+        offset,
+      };
+
+      console.log(`[DataGov] Search batch: offset=${offset}, limit=${limit}, query="${query}"`);
+      const response = await axios.get(GOV_IL_API, { params });
+
+      if (response.data?.success && response.data?.result?.records) {
+        const records = response.data.result.records;
+        allRecords.push(...records);
+        
+        console.log(`[DataGov] Found ${records.length} records (total: ${allRecords.length})`);
+        
+        // Check if there are more records
+        const total = response.data.result.total || 0;
+        hasMore = records.length === limit && allRecords.length < total && allRecords.length < maxRecords;
+        offset += limit;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    console.log(`[DataGov] Search complete. Total matching records: ${allRecords.length}`);
+    
+    // Cache the results
+    cache.set(cacheKey, {
+      data: allRecords,
+      timestamp: Date.now(),
+    });
+
+    return allRecords;
+  } catch (error) {
+    console.error(`[DataGov] Error searching resource ${resourceId}:`, error.message);
+    throw error;
+  }
+}
+
+/**
  * Fetch all records from a data.gov.il resource with pagination
+ * ⚠️ שימוש רק כשצריך את כל המאגר! מומלץ להשתמש ב-searchRecords במקום
  * @param {string} resourceId - The data.gov.il resource ID
  * @param {number} maxRecords - Maximum records to fetch (default: 100000)
  * @returns {Promise<Array>} All records from the resource
@@ -27,7 +95,8 @@ export async function fetchAllRecords(resourceId, maxRecords = 100000) {
     return cached.data;
   }
 
-  console.log(`[DataGov] Fetching data for ${resourceId}...`);
+  console.log(`[DataGov] ⚠️ Fetching ALL data for ${resourceId} (up to ${maxRecords} records)...`);
+  console.log(`[DataGov] Consider using searchRecords() instead for better performance`);
   
   try {
     const allRecords = [];
