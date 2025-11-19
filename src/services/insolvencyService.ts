@@ -3,8 +3,8 @@
  * Fetches insolvency case data from Israeli Ministry of Justice API
  */
 
-const JUSTICE_API_URL = process.env.JUSTICE_API_URL || 'https://api.justice.gov.il/InsolvencyPublicData/GetData';
-const CACHE_DURATION = (parseInt(process.env.CACHE_TTL_JUSTICE || '86400') * 1000); // Convert seconds to milliseconds
+const JUSTICE_API_URL = process.env.JUSTICE_API_URL!;
+const CACHE_DURATION = parseInt(process.env.CACHE_TTL_JUSTICE!) * 1000;
 const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
 const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 

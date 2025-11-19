@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { searchCompanies } from '../services/companyService';
 
 /**
  * AutoComplete Component
@@ -61,7 +60,11 @@ export default function AutoComplete({ onSelect }) {
     debounceTimerRef.current = setTimeout(async () => {
       try {
         setError(null);
-        const data = await searchCompanies(query);
+        const response = await fetch(`/api/company/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+          throw new Error('Failed to search companies');
+        }
+        const data = await response.json();
         setResults(Array.isArray(data) ? data : []);
         // Show dropdown only if we have results
         if (data.length > 0) {

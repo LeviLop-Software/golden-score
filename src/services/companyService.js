@@ -6,7 +6,7 @@ import axios from 'axios';
  */
 
 const GOV_IL_API = 'https://data.gov.il/api/3/action/datastore_search';
-const RESOURCE_ID = process.env.RESOURCE_ID_COMPANIES || 'f004176c-b85f-4542-8901-7b3176f9a054';
+const RESOURCE_ID = process.env.RESOURCE_ID_COMPANIES;
 const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 
 /**

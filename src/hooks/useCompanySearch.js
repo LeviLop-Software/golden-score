@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { searchCompanies } from '../services/companyService';
 
 /**
  * Custom hook for company search functionality with debouncing
@@ -27,7 +26,11 @@ export default function useCompanySearch(debounceMs = 500) {
     setError(null);
 
     try {
-      const data = await searchCompanies(searchQuery);
+      const response = await fetch(`/api/company/search?q=${encodeURIComponent(searchQuery)}`);
+      if (!response.ok) {
+        throw new Error('Failed to search companies');
+      }
+      const data = await response.json();
       setResults(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message || 'Failed to search companies');

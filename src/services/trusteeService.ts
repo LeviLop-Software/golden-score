@@ -27,15 +27,15 @@
 import { searchRecords } from './dataGovService';
 
 // Environment variables
-const CACHE_DURATION = (parseInt(process.env.CACHE_TTL_TRUSTEE || '86400') * 1000); // Convert seconds to milliseconds
+const CACHE_DURATION = parseInt(process.env.CACHE_TTL_TRUSTEE!) * 1000;
 const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
 const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 
 // Resource IDs ממאגר PR2018
 const RESOURCE_IDS = {
-  LIQUIDATED_COMPANIES: process.env.RESOURCE_ID_LIQUIDATED || 'd8715392-287f-49b7-9ae3-f21ec5bf55f3', // חברות בפירוק - יש ח.פ
-  BANKRUPTCY_DEBTORS: process.env.RESOURCE_ID_DEBTORS || '2156937e-524a-4511-907d-5470a6a5264f',   // חייבים בהליך - אין ח.פ, יש מזהה תיק
-  DEBT_CLAIMS: process.env.RESOURCE_ID_CLAIMS || '3cb25b2e-a501-4870-86a6-30be8d8e80a5',          // תביעות חוב - אין ח.פ, יש מזהה תיק
+  LIQUIDATED_COMPANIES: process.env.RESOURCE_ID_LIQUIDATED!,
+  BANKRUPTCY_DEBTORS: process.env.RESOURCE_ID_DEBTORS!,
+  DEBT_CLAIMS: process.env.RESOURCE_ID_CLAIMS!,
 };
 
 // Cache

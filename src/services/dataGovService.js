@@ -5,8 +5,8 @@ import axios from 'axios';
  * Handles fetching large datasets with pagination and caching
  */
 
-const GOV_IL_API = `${process.env.DATA_GOV_API_URL || 'https://data.gov.il/api/3/action'}/datastore_search`;
-const CACHE_DURATION = (process.env.CACHE_TTL_DATA_GOV || 3600) * 1000; // Convert seconds to milliseconds
+const GOV_IL_API = `${process.env.DATA_GOV_API_URL}/datastore_search`;
+const CACHE_DURATION = parseInt(process.env.CACHE_TTL_DATA_GOV) * 1000;
 const ENABLE_CACHE = process.env.ENABLE_CACHE !== 'false';
 const ENABLE_DEBUG = process.env.ENABLE_DEBUG_LOGS === 'true';
 

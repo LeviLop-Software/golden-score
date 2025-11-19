@@ -8,7 +8,6 @@ import CompanyChangesList from '@/src/components/CompanyChangesList';
 import TrusteeCard from '@/src/components/TrusteeCard';
 import ComingSoonCard from '@/src/components/ComingSoonCard';
 import SkeletonCard from '@/src/components/SkeletonCard';
-import { searchCompanies } from '@/src/services/companyService';
 import { fetchCompanyChanges, fetchCompanyTrustee } from '@/src/lib/apiClient';
 import { useTranslation } from 'react-i18next';
 import { Gavel } from 'lucide-react';
@@ -61,8 +60,12 @@ export default function CompanyPage() {
         setLoading(true);
         setError(null);
         
-        // Search by company number (ח"פ)
-        const results = await searchCompanies(companyId);
+        // Search by company number (ח"פ) via API
+        const response = await fetch(`/api/company/search?q=${encodeURIComponent(companyId)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch company');
+        }
+        const results = await response.json();
         
         if (results && results.length > 0) {
           // Find exact match by company number
