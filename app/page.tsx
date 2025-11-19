@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/src/components/DashboardLayout';
 import AutoComplete from '@/src/components/AutoComplete';
 
-const MAX_SEARCH_HISTORY = 5;
+const MAX_SEARCH_HISTORY = 15;
 
 export default function Home() {
   const router = useRouter();

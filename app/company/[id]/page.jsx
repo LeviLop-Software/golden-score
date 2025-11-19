@@ -5,12 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import Head from 'next/head';
 import CompanyCard from '@/src/components/CompanyCard';
 import CompanyChangesList from '@/src/components/CompanyChangesList';
-import CompanyInsolvencyList from '@/src/components/CompanyInsolvencyList';
 import TrusteeCard from '@/src/components/TrusteeCard';
+import ComingSoonCard from '@/src/components/ComingSoonCard';
 import SkeletonCard from '@/src/components/SkeletonCard';
 import { searchCompanies } from '@/src/services/companyService';
-import { fetchCompanyChanges, fetchCompanyInsolvency, fetchCompanyTrustee } from '@/src/lib/apiClient';
+import { fetchCompanyChanges, fetchCompanyTrustee } from '@/src/lib/apiClient';
 import { useTranslation } from 'react-i18next';
+import { Gavel } from 'lucide-react';
 
 export default function CompanyPage() {
   const params = useParams();
@@ -18,11 +19,9 @@ export default function CompanyPage() {
   const { t } = useTranslation();
   const [company, setCompany] = useState(null);
   const [companyChanges, setCompanyChanges] = useState([]);
-  const [insolvencyData, setInsolvencyData] = useState(null);
   const [trusteeData, setTrusteeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingChanges, setLoadingChanges] = useState(false);
-  const [loadingInsolvency, setLoadingInsolvency] = useState(false);
   const [loadingTrustee, setLoadingTrustee] = useState(false);
   const [error, setError] = useState(null);
 
@@ -86,18 +85,6 @@ export default function CompanyPage() {
             setLoadingChanges(false);
           }
 
-          // Fetch insolvency data
-          setLoadingInsolvency(true);
-          try {
-            const data = await fetchCompanyInsolvency(companyId);
-            setInsolvencyData(data);
-          } catch (err) {
-            console.error('Error fetching insolvency data:', err);
-            setInsolvencyData({ caseCount: 0, cases: [] });
-          } finally {
-            setLoadingInsolvency(false);
-          }
-
           // Fetch trustee data
           setLoadingTrustee(true);
           try {
@@ -133,7 +120,6 @@ export default function CompanyPage() {
           {/* Skeletons */}
           <div className="space-y-6">
             <SkeletonCard type="company" />
-            <SkeletonCard type="list" />
             <SkeletonCard type="list" />
             <SkeletonCard type="trustee" />
           </div>
@@ -227,19 +213,26 @@ export default function CompanyPage() {
               <CompanyChangesList changes={companyChanges} loading={false} />
             )}
             
-            {/* Insolvency - show skeleton or data */}
-            {loadingInsolvency ? (
-              <SkeletonCard type="list" />
-            ) : (
-              <CompanyInsolvencyList insolvencyData={insolvencyData} loading={false} />
-            )}
-            
             {/* Trustee - show skeleton or data */}
             {loadingTrustee ? (
               <SkeletonCard type="trustee" />
             ) : (
               trusteeData && <TrusteeCard companyId={trusteeData.companyId} />
             )}
+
+            {/* Insolvency - Coming Soon */}
+            <ComingSoonCard
+              title="הליכי חדלות פירעון"
+              description="מידע על הליכי חדלות פירעון יהיה זמין בגרסה הבאה"
+              icon={Gavel}
+            />
+
+            {/* Legal Cases - Coming Soon */}
+            <ComingSoonCard
+              title="תביעות משפטיות ופסקי דין"
+              description="מידע על תביעות משפטיות ופסקי דין יהיה זמין בגרסה הבאה"
+              icon={Gavel}
+            />
           </div>
         )}
         </div>

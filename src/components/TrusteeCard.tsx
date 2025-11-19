@@ -24,6 +24,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { TrusteeData, TrusteeInfo, LegalProcedure } from '../services/trusteeService';
+import { formatIsraeliDate } from '@/src/utils/dateUtils';
 
 interface TrusteeCardProps {
   companyId: string;
@@ -105,7 +106,7 @@ const TrusteeInfoCard: React.FC<{ trustee: TrusteeInfo }> = ({ trustee }) => {
         {trustee.appointmentDate && (
           <div className="flex items-center gap-2">
             <span className="font-semibold">תאריך מינוי:</span>
-            <span>{new Date(trustee.appointmentDate).toLocaleDateString('he-IL')}</span>
+            <span>{formatIsraeliDate(trustee.appointmentDate)}</span>
           </div>
         )}
         {trustee.status && (
@@ -143,13 +144,13 @@ const ProcedureCard: React.FC<{ procedure: LegalProcedure }> = ({ procedure }) =
         {procedure.openingDate && (
           <div className="flex items-center gap-2">
             <span className="font-semibold">תאריך פתיחה:</span>
-            <span>{new Date(procedure.openingDate).toLocaleDateString('he-IL')}</span>
+            <span>{formatIsraeliDate(procedure.openingDate)}</span>
           </div>
         )}
         {procedure.closingDate && (
           <div className="flex items-center gap-2">
             <span className="font-semibold">תאריך סגירה:</span>
-            <span>{new Date(procedure.closingDate).toLocaleDateString('he-IL')}</span>
+            <span>{formatIsraeliDate(procedure.closingDate)}</span>
           </div>
         )}
         {procedure.claimant && (
@@ -164,78 +165,97 @@ const ProcedureCard: React.FC<{ procedure: LegalProcedure }> = ({ procedure }) =
 };
 
 /**
- * כרטיס מאוחד להצגת כל תביעות החוב
+ * כרטיס מאוחד להצגת כל תביעות החוב (באקורדיון)
  */
 const ClaimsCard: React.FC<{ claims: LegalProcedure[] }> = ({ claims }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const totalClaimAmount = claims.reduce((sum, c) => sum + (c.amount || 0), 0);
   const totalApprovedAmount = claims.reduce((sum, c) => sum + (c.approvedAmount || 0), 0);
   
   return (
-    <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 mb-3">
-      <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-300">
+    <div className="bg-amber-50 border border-amber-300 rounded-lg mb-3">
+      {/* כותרת אקורדיון - ניתן ללחיצה */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-3 hover:bg-amber-100 transition-colors rounded-t-lg"
+      >
         <div className="flex items-center gap-2">
           <ProcedureTypeBadge type="claim" />
           <span className="text-xs font-bold text-amber-900">{claims.length} תביעות</span>
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <div>
-            <span className="text-gray-600">תביעות: </span>
-            <span className="font-bold text-amber-900">₪{totalClaimAmount.toLocaleString('he-IL')}</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 text-xs">
+            <div>
+              <span className="text-gray-600">תביעות: </span>
+              <span className="font-bold text-amber-900">₪{totalClaimAmount.toLocaleString('he-IL')}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">אושר: </span>
+              <span className="font-bold text-green-700">₪{totalApprovedAmount.toLocaleString('he-IL')}</span>
+            </div>
           </div>
-          <div>
-            <span className="text-gray-600">אושר: </span>
-            <span className="font-bold text-green-700">₪{totalApprovedAmount.toLocaleString('he-IL')}</span>
-          </div>
+          <ChevronDown 
+            className={`h-5 w-5 text-amber-700 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          />
         </div>
-      </div>
+      </button>
 
-      {/* טבלת תביעות קומפקטית */}
-      <div className="space-y-1">
-        {claims.map((claim, index) => (
-          <div key={index} className="bg-white/70 border border-amber-200/60 rounded p-2 text-xs hover:bg-white transition-colors">
-            <div className="flex items-center justify-between gap-2">
-              {/* עמודה ימנית: מספר + פרטים */}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="font-bold text-amber-900 shrink-0">#{index + 1}</span>
-                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-[10px] font-medium shrink-0">
-                  {claim.status}
-                </span>
-                {claim.claimantType && (
-                  <span className="text-gray-600 truncate">{claim.claimantType.trim()}</span>
-                )}
-                {claim.systemType && (
-                  <span className="text-gray-500 text-[10px] truncate">({claim.systemType.trim()})</span>
-                )}
-              </div>
-              
-              {/* עמודה שמאלית: סכומים */}
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="text-left">
-                  <div className="text-[10px] text-gray-500">תביעה</div>
-                  <div className="font-bold text-amber-900">₪{(claim.amount || 0).toLocaleString('he-IL')}</div>
+      {/* תוכן האקורדיון */}
+      <div 
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="p-3 pt-0 border-t border-amber-300">
+          {/* טבלת תביעות קומפקטית */}
+          <div className="space-y-1 mt-2">
+            {claims.map((claim, index) => (
+              <div key={index} className="bg-white/70 border border-amber-200/60 rounded p-2 text-xs hover:bg-white transition-colors">
+                <div className="flex items-center justify-between gap-2">
+                  {/* עמודה ימנית: מספר + פרטים */}
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="font-bold text-amber-900 shrink-0">#{index + 1}</span>
+                    <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-[10px] font-medium shrink-0">
+                      {claim.status}
+                    </span>
+                    {claim.claimantType && (
+                      <span className="text-gray-600 truncate">{claim.claimantType.trim()}</span>
+                    )}
+                    {claim.systemType && (
+                      <span className="text-gray-500 text-[10px] truncate">({claim.systemType.trim()})</span>
+                    )}
+                  </div>
+                  
+                  {/* עמודה שמאלית: סכומים */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="text-left">
+                      <div className="text-[10px] text-gray-500">תביעה</div>
+                      <div className="font-bold text-amber-900">₪{(claim.amount || 0).toLocaleString('he-IL')}</div>
+                    </div>
+                    {claim.approvedAmount !== undefined && claim.approvedAmount > 0 && (
+                      <div className="text-left">
+                        <div className="text-[10px] text-gray-500">אושר</div>
+                        <div className="font-bold text-green-700">₪{claim.approvedAmount.toLocaleString('he-IL')}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {claim.approvedAmount !== undefined && claim.approvedAmount > 0 && (
-                  <div className="text-left">
-                    <div className="text-[10px] text-gray-500">אושר</div>
-                    <div className="font-bold text-green-700">₪{claim.approvedAmount.toLocaleString('he-IL')}</div>
+                
+                {/* שורה נוספת לפרטים אם יש */}
+                {(claim.fileNumber || claim.debtCreationDate) && (
+                  <div className="flex items-center gap-3 mt-1 pt-1 border-t border-amber-100 text-[10px] text-gray-500">
+                    {claim.fileNumber && (
+                      <span>תיק: <span className="font-mono text-gray-700">{claim.fileNumber}</span></span>
+                    )}
+                    {claim.debtCreationDate && (
+                      <span>תאריך: <span className="text-gray-700">{formatIsraeliDate(claim.debtCreationDate)}</span></span>
+                    )}
                   </div>
                 )}
               </div>
-            </div>
-            
-            {/* שורה נוספת לפרטים אם יש */}
-            {(claim.fileNumber || claim.debtCreationDate) && (
-              <div className="flex items-center gap-3 mt-1 pt-1 border-t border-amber-100 text-[10px] text-gray-500">
-                {claim.fileNumber && (
-                  <span>תיק: <span className="font-mono text-gray-700">{claim.fileNumber}</span></span>
-                )}
-                {claim.debtCreationDate && (
-                  <span>תאריך: <span className="text-gray-700">{claim.debtCreationDate}</span></span>
-                )}
-              </div>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

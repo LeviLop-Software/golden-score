@@ -1,5 +1,5 @@
 /**
- * Frontend API Client for Company Changes
+ * Frontend API Client for Company Data
  * Wrapper for calling backend API endpoints
  */
 
@@ -24,34 +24,6 @@ export async function fetchCompanyChanges(companyId) {
     return data.changes || [];
   } catch (error) {
     console.error('Error fetching company changes:', error);
-    throw error;
-  }
-}
-
-/**
- * Fetch company insolvency data from backend API
- * @param {string} companyId - Company number
- * @returns {Promise<Object>} Insolvency data with caseCount and cases
- */
-export async function fetchCompanyInsolvency(companyId) {
-  if (!companyId) {
-    throw new Error('Company ID is required');
-  }
-
-  try {
-    const response = await fetch(`/api/company/${companyId}/insolvency`);
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || 'Failed to fetch insolvency data');
-    }
-
-    return {
-      caseCount: data.caseCount || 0,
-      cases: data.cases || [],
-    };
-  } catch (error) {
-    console.error('Error fetching insolvency data:', error);
     throw error;
   }
 }

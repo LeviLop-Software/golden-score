@@ -425,13 +425,6 @@ Max: 100
 - **Key**: `resource_28780ab5-3ef1-44c7-8377-da82c0aa6781`
 - **Benefit**: מהירות + הפחתת עומס על data.gov.il
 
-#### תצוגה
-- כרטיס לבן עם צל
-- כל שינוי בשורה נפרדת
-- קו מפריד בין שינויים
-- Hover effect
-- ספירת שינויים בתחתית
-
 #### סוגי שינויים נפוצים
 - שינוי כתובת רשומה
 - שינוי מנהלים ובעלי מניות
@@ -442,57 +435,30 @@ Max: 100
 
 ---
 
-### 4. הליכי חדלות פירעון (Insolvency)
+### 4. הליכי חדלות פירעון (Insolvency) - 🔜 בקרוב
 
-#### תיאור
-מידע קריטי על הליכים משפטיים של חדלות פירעון ממשרד המשפטים
+#### סטטוס
+- ✅ **Backend מוכן**: `insolvencyService.ts` פועל עם data.gov.il
+- 🔜 **UI**: מוצג כ-ComingSoonCard
+- ⚠️ **סיבה**: דורש API משרד המשפטים (בתשלום 300-1500₪/חודש) לנתונים מפורטים
 
-#### רכיבים מעורבים
-- **Frontend**: `CompanyInsolvencyList.jsx`
-- **API Route**: `/api/company/[id]/insolvency/route.js`
+#### רכיבים טכניים
+- **API Route**: `/api/company/[id]/insolvency/route.js` (קיים, לא בשימוש)
 - **Service**: `insolvencyService.ts` (TypeScript)
-- **API**: Ministry of Justice Insolvency API
+- **Data Source**: data.gov.il - RESOURCE_ID_LIQUIDATED
+- **Frontend**: `ComingSoonCard.jsx` (placeholder)
 
-#### תהליך טעינה
-```
-1. Component mount → useEffect
-2. fetchCompanyInsolvency(companyId)
-3. API Route קורא ל-getInsolvencyData()
-4. POST ל-Justice API עם pagination
-5. אוסף כל העמודים (max 10,000 records)
-6. Cache למשך 24 שעות
-7. החזרת { caseCount, cases[] }
-```
-
-#### Pagination Logic
+#### Logic זמין
 ```typescript
-pageSize: 50
-maxPages: 200
-maxRecords: 10,000
-כל עמוד בקריאה נפרדת עד אין יותר תוצאות
+getInsolvencyData(companyId: string): Promise<InsolvencyData>
+  ├─ searchDataGov(RESOURCE_ID_LIQUIDATED)
+  ├─ mapInsolvencyRecord(record)
+  └─ return { cases: Case[], hasInsolvency: boolean }
 ```
 
 #### Caching
 - **TTL**: 24 שעות
 - **Key**: `insolvency_${companyNumber}`
-- **Rationale**: מידע משתנה לאט
-
-#### תצוגה
-
-**מצב ללא הליכים**:
-- רקע ירוק
-- סימן ✓
-- "אין מידע על הליכי חדלות פירעון"
-
-**מצב עם הליכים**:
-- רקע אדום עם אזהרה ⚠️
-- ספירת הליכים
-- רשימת הליכים מפורטת:
-  - סוג ההליך
-  - מזהה הליך
-  - תאריך פתיחה
-  - סטטוס
-  - רשימת כונסים/נאמנים
 
 #### חשיבות עסקית
 🔴 **קריטי**: הליכי חדלות פירעון מעידים על:
@@ -500,19 +466,25 @@ maxRecords: 10,000
 - אי-יכולת לפרוע חובות
 - סיכון גבוה להשקעה/שיתוף פעולה
 
+#### תוכנית פיתוח עתידית
+- [ ] אינטגרציה עם Justice API (דורש תשלום)
+- [ ] נתונים מפורטים על הליכים
+- [ ] סטטוסים מעודכנים בזמן אמת
+
 ---
 
-### 5. כונס נכסים / נאמן (Trustee & Liquidation)
+### 5. כונס נכסים / נאמן (Trustee & Liquidation) - ✅ פעיל
 
 #### תיאור
-מערכת מתקדמת המשלבת 3 מאגרי נתונים של הכונס הרשמי לתמונה מקיפה
+מערכת מתקדמת המשלבת 3 מאגרי נתונים של הכונס הרשמי (PR2018) לתמונה מקיפה
 
 #### רכיבים מעורבים
 - **Frontend**: `TrusteeCard.tsx` (TypeScript)
-- **API Route**: `/api/company/[id]/trustee/route.ts`
+- **API Route**: `/api/company/[id]/trustee/route.js`
 - **Service**: `trusteeService.ts`
-- **Data Service**: `dataGovService.js`
-- **APIs**: 3 מאגרי PR2018
+- **Data Client**: `dataGovClient.js`
+- **APIs**: 3 מאגרי data.gov.il PR2018
+- **Utils**: `dateUtils.ts` - פורמט תאריכים DD/MM/YYYY
 
 #### אלגוריתם חיפוש משולב
 
@@ -899,20 +871,23 @@ searchRecords(resourceId, '123456', 1000)
 
 ## מסלולי פיתוח עתידיים
 
-### Phase 1: UX & Performance ✅ הושלם
+### Phase 1: Core Features ✅ הושלם
+- [x] חיפוש חברות (ח.פ / שם)
+- [x] מידע בסיסי על חברות
+- [x] שינויים בחברה (ICA API)
+- [x] כונס נכסים/נאמן (3 data sources)
+- [x] תביעות חוב (accordion)
 - [x] Progressive loading - skeleton loaders
-- [x] אקורדיונים חלקים עם אנימציות
-- [x] רספונסיביות מלאה למובייל
-- [x] כפתור העתקה למספר ח"פ
-- [x] ברנדינג Golden Score
-- [x] אופטימיזציית חיפוש עם searchRecords()
-- [x] Caching חכם עם TTL
+- [x] רספונסיביות מלאה RTL
+- [x] Caching חכם (24h TTL)
+- [x] Date formatting (DD/MM/YYYY)
 
-### Phase 2: ציונים אמיתיים
-- [ ] אלגוריתם scoring בפועל
+### Phase 2: Premium Features - בקרוב
+- [ ] הליכי חדלות פירעון מפורטים (דורש Justice API)
+- [ ] תביעות משפטיות (דורש Justice API)
+- [ ] אלגוריתם scoring מתקדם
 - [ ] שקלול לפי סוג הליכים
 - [ ] ניקוד בהתאם לחומרה
-- [ ] השוואת חברות
 
 ### Phase 3: אנליטיקה
 - [ ] גרפים היסטוריים

@@ -12,7 +12,7 @@ export default function CompanyChangesList({ changes, loading = false }) {
   if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">שינויים על החברה</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">שינויים בחברה</h3>
         <div className="flex items-center gap-3 text-gray-600">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
           <span>טוען שינויים...</span>
@@ -24,7 +24,7 @@ export default function CompanyChangesList({ changes, loading = false }) {
   if (!changes || changes.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">שינויים על החברה</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">שינויים בחברה</h3>
         <p className="text-gray-500 italic">לא נמצאו שינויים רשומים</p>
       </div>
     );
@@ -36,7 +36,7 @@ export default function CompanyChangesList({ changes, loading = false }) {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between cursor-pointer mb-6 hover:opacity-80 transition-opacity"
       >
-        <h3 className="text-2xl font-bold text-gray-900">שינויים על החברה</h3>
+        <h3 className="text-2xl font-bold text-gray-900">שינויים בחברה</h3>
         <ChevronDown 
           size={28} 
           className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
