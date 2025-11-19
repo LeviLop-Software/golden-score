@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileDown, ChevronDown, Copy, Check } from 'lucide-react';
-import { exportCompanyPdf } from '../lib/pdf';
+// import { exportCompanyPdf } from '../lib/pdf'; // TODO: Enable when Hebrew font support is added
 
 /**
  * CompanyCard Component
@@ -44,12 +44,8 @@ export default function CompanyCard({ company }) {
   const scoreBorderColor = score >= 75 ? 'border-green-600' : score >= 50 ? 'border-yellow-600' : 'border-red-600';
 
   const handleExportPdf = () => {
-    try {
-      exportCompanyPdf(company);
-    } catch (error) {
-      console.error('Error exporting PDF:', error);
-      alert('שגיאה בייצוא PDF');
-    }
+    // TODO: Implement PDF export
+    alert('ייצוא PDF יהיה זמין בקרוב');
   };
 
   // Extract additional info from raw data

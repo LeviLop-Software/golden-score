@@ -244,11 +244,13 @@ import { ThemeProvider } from 'next-themes'
 **קושי**: 🔴 קשה  
 **זמן משוער**: 3-4 ימים
 
+> **⚠️ הערה על PDF**: תשתית הייצוא ל-PDF כבר קיימת (`src/lib/pdf.js` + `jsPDF`), אך כרגע לא עובדת עקב בעיית תמיכה בפונטים עבריים ב-jsPDF. כפתור הייצוא ב-UI מוגדר כ"בקרוב". יש לטפל בנושא הפונטים העבריים לפני הפעלת הפיצ'ר.
+
 **תיאור**:
 - ייצוא ל-Excel/CSV עם כל הנתונים
 - דוחות תקופתיים (ריכוז שבועי/חודשי)
 - תבניות מותאמות אישית
-- PDF מתקדם עם גרפים
+- 🔜 PDF מתקדם עם גרפים (דורש תיקון תמיכה בעברית)
 
 **דרישות טכניות**:
 - Excel: `xlsx` library

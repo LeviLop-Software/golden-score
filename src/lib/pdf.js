@@ -4,9 +4,15 @@ import 'jspdf-autotable';
 /**
  * PDF Generation Library
  * Creates PDF reports for company data
- * TODO: Add Hebrew font support for jsPDF
+ * 
+ * ⚠️ STATUS: NOT FUNCTIONAL - Hebrew font support required
+ * Current implementation does not properly render Hebrew text.
+ * jsPDF requires custom Hebrew font integration before this can be used.
+ * 
+ * TODO: Add Hebrew font support for jsPDF (critical)
  * TODO: Add company logo
  * TODO: Add charts/graphs
+ * TODO: Fix RTL text direction
  */
 
 /**
