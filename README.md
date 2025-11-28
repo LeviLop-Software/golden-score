@@ -95,6 +95,36 @@ Every PR gets a unique preview URL for testing.
 
 ---
 
+## 🔢 Versioning
+
+This project uses semantic versioning: `MAJOR.MINOR.PATCH`
+
+### Automatic Version Bumping
+
+Every push to `main` automatically bumps the **patch** version (0.0.1 → 0.0.2)
+
+### Manual Version Bumping
+
+```bash
+# Bump patch version (0.0.1 → 0.0.2) - for bug fixes
+npm run version:patch
+
+# Bump minor version (0.1.0 → 0.2.0) - for new features
+npm run version:minor
+
+# Bump major version (1.0.0 → 2.0.0) - for breaking changes
+npm run version:major
+
+# Or use the script:
+./scripts/bump-version.sh patch  # default
+./scripts/bump-version.sh minor
+./scripts/bump-version.sh major
+```
+
+Current version: Check `package.json`
+
+---
+
 ## 📊 Environment Variables
 
 Required for deployment:
