@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Head from 'next/head';
 import CompanyCard from '@/src/components/CompanyCard';
+import CompanyNews from '@/src/components/CompanyNews';
 import CompanyChangesList from '@/src/components/CompanyChangesList';
 import TrusteeCard from '@/src/components/TrusteeCard';
 import ComingSoonCard from '@/src/components/ComingSoonCard';
@@ -235,6 +236,13 @@ export default function CompanyPage() {
               title="תביעות משפטיות ופסקי דין"
               description="מידע על תביעות משפטיות ופסקי דין יהיה זמין בגרסה הבאה"
               icon={Gavel}
+            />
+
+            {/* Company News - Last Section */}
+            <CompanyNews 
+              companyName={company.companyName || company.name}
+              companyNumber={company.companyNumber || company.id}
+              taseId={company.taseId || company.taseCompanyId}
             />
           </div>
         )}

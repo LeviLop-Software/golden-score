@@ -5,11 +5,12 @@
 **"Golden Score - מערכת אינטליגנטית לבדיקת אמינות חברות ישראליות"**
 
 ### מה המערכת עושה?
-חיפוש ובדיקה מקיפה של חברות ישראליות עם אינטגרציה אוטומטית ל-4 מקורות ממשלתיים:
+חיפוש ובדיקה מקיפה של חברות ישראליות עם אינטגרציה אוטומטית ל-4 מקורות ממשלתיים + חדשות:
 1. **רשם החברות** - פרטי חברה בסיסיים וחיפוש
 2. **רשות התאגידים (ICA)** - היסטוריית שינויים ועדכונים
 3. **משרד המשפטים** - הליכי חדלות פירעון
 4. **הכונס הרשמי (PR2018)** - פירוק, פשיטת רגל ותביעות חוב
+5. **חדשות ועדכונים** - אגרגציה אוטומטית מגוגל חדשות ותקשורת ישראלית
 
 ### למה זה חשוב?
 - ⚡ **מהירות**: תוצאות תוך שניות במקום שעות מחקר
@@ -75,12 +76,13 @@
 | טכנולוגיה | תפקיד |
 |-----------|--------|
 | **Next.js API Routes** | Backend endpoints |
-| **axios** | HTTP client לקריאות API |
+| **fetch API** | HTTP client לקריאות API |
 | **In-Memory Cache** | Map() לאחסון זמני |
 
 ### ספריות נוספות
 | ספרייה | שימוש |
 |--------|-------|
+| **rss-parser** | פרסור RSS feeds (חדשות) |
 | **jsPDF** | 🔜 ייצוא PDF (דורש תמיכה בעברית) |
 | **jsPDF-AutoTable** | 🔜 טבלאות ב-PDF (דורש תמיכה בעברית) |
 | **Chart.js** | גרפים (placeholder) |
@@ -98,8 +100,11 @@
 │  │  AutoComplete│  │  CompanyCard │  │ ChangesList  │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │InsolvencyList│  │  TrusteeCard │  │🔜 PDF Export │      │
+│  │InsolvencyList│  │  TrusteeCard │  │  CompanyNews │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐                                          │
+│  │🔜 PDF Export │                                          │
+│  └──────────────┘                                          │
 └─────────────────────────────────────────────────────────────┘
                             ↓ HTTP/Fetch
 ┌─────────────────────────────────────────────────────────────┐
@@ -108,6 +113,7 @@
 │  │  /api/company/[id]/changes      (ICA Changes)        │  │
 │  │  /api/company/[id]/insolvency   (Justice Ministry)   │  │
 │  │  /api/company/[id]/trustee      (PR2018 Trustee)     │  │
+│  │  /api/company/news              (News Aggregation)   │  │
 │  └──────────────────────────────────────────────────────┘  │
 │                            ↓                                 │
 │  ┌──────────────────────────────────────────────────────┐  │
@@ -116,6 +122,7 @@
 │  │  • companyChangesService.js                          │  │
 │  │  • insolvencyService.ts                              │  │
 │  │  • trusteeService.ts                                 │  │
+│  │  • news.js (RSS aggregation)                         │  │
 │  │  • dataGovService.js (Pagination + Cache)            │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
@@ -127,6 +134,10 @@
 │  │  (PR2018 +   │  │ (Insolvency) │  │  (Changes)   │      │
 │  │   Companies) │  └──────────────┘  └──────────────┘      │
 │  └──────────────┘                                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ Google News  │  │ Ynet, Globes │  │  Calcalist   │      │
+│  │   RSS Feed   │  │  RSS Feeds   │  │   RSS Feed   │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -594,6 +605,132 @@ RETURN TrusteeData
 
 ---
 
+### 6. חדשות ועדכונים (Company News) - ✅ פעיל
+
+#### תיאור
+אגרגציה אוטומטית של חדשות ועדכונים על החברה ממקורות מרובים, עם דדופליקציה חכמה ו-caching.
+
+#### רכיבים מעורבים
+- **Frontend**: `CompanyNews.jsx`
+- **API Route**: `/api/company/news/route.js`
+- **Service**: `news.js` (src/lib/)
+- **Parser**: `rss-parser` v3.13.0
+
+#### מקורות חדשות
+
+**1. Google News RSS**
+- URL: `https://news.google.com/rss/search?q={companyName}&hl=he&gl=IL&ceid=IL:he`
+- כיסוי: בינלאומי + ישראלי
+- שפה: עברית
+- מגבלה: 15 פריטים מובילים
+
+**2. Ynet (ידיעות אחרונות)**
+- RSS Feed: כלכלה
+- כיסוי: חדשות כלליות
+- מגבלה: 10 פריטים
+
+**3. Globes (גלובס)**
+- RSS Feed: כלכלה ועסקים
+- כיסוי: חדשות עסקיות ופיננסיות
+- מגבלה: 10 פריטים
+
+**4. Calcalist (כלכליסט)**
+- RSS Feed: כלכלה וטכנולוגיה
+- כיסוי: עסקים, הייטק, פיננסים
+- מגבלה: 10 פריטים
+
+#### אלגוריתם עבודה
+
+```
+Stage 1: איסוף מקבילי (Promise.allSettled)
+─────────────────────────────────────────────
+- fetchGoogleNews(companyName)
+- fetchIsraeliNews(companyName)
+  ├─ Ynet RSS
+  ├─ Globes RSS
+  └─ Calcalist RSS
+
+Stage 2: מיזוג ונרמול
+──────────────────────
+- מיזוג כל המקורות לרשימה אחת
+- נרמול כותרות (הסרת סימני פיסוק)
+- תיוג מקור (Google News, Ynet, Globes, etc.)
+
+Stage 3: דדופליקציה
+────────────────────
+removeDuplicates():
+  - נרמול כותרות
+  - חישוב Levenshtein Distance
+  - סף דמיון: 80%
+  - שמירת הגרסה המוקדמת ביותר
+
+Stage 4: מיון ו-caching
+────────────────────────
+- מיון לפי תאריך (חדש → ישן)
+- הגבלה ל-30 פריטים
+- Cache ל-2 שעות
+```
+
+#### מבנה נתונים
+
+**NewsItem**:
+```javascript
+{
+  title: string,        // כותרת החדשה
+  source: string,       // מקור (Google News, Ynet, etc.)
+  date: Date,          // תאריך פרסום
+  snippet: string,     // תקציר/תוכן
+  link: string,        // קישור למאמר המלא
+  type: 'news'         // סוג (תמיד 'news')
+}
+```
+
+#### UI Features
+
+**כרטיס חדשה**:
+- אייקון עיתון
+- תגית מקור צבעונית
+- כותרת קליקבילית
+- תקציר (2 שורות מקסימום)
+- תאריך יחסי ("היום", "אתמול", "לפני 3 ימים")
+- קישור חיצוני
+
+**תגיות מקור**:
+| מקור | צבע | 
+|------|-----|
+| Google News | כחול |
+| Globes | ירוק |
+| Ynet | אדום |
+| Calcalist | כתום |
+
+**דף חדשות מלא**:
+- `/company/news?name={companyName}`
+- פגינציה (10 פריטים לעמוד)
+- פילטרים לפי מקור
+- רענון ידני
+- טעינה progressive
+
+#### Caching
+- **TTL**: 2 שעות
+- **Key**: `${companyName}-${companyNumber}-${taseId}`
+- **Storage**: In-Memory Map
+- **Rationale**: חדשות משתנות תכופות אבל לא בכל רגע
+
+#### ביצועים
+- **Parallel Fetching**: כל המקורות במקביל
+- **Error Handling**: Promise.allSettled - המשך גם אם מקור אחד נכשל
+- **Deduplication**: O(n²) אבל מוגבל ל-~45 פריטים מקסימום
+- **Response Time**: 1-2 שניות (network-bound)
+
+#### חשיבות עסקית
+📰 **רלוונטיות**: חדשות עדכניות מספקות:
+- הקשר עסקי נוכחי
+- פרסומים על שינויים משמעותיים
+- אירועים משפטיים/רגולטוריים
+- מידע על עסקאות, השקעות, שותפויות
+
+---
+
 ## מבנה הקוד
 
 ### ארגון תיקיות
@@ -606,11 +743,15 @@ mvp-company-checker/
 │   ├── I18nProvider.tsx          # Provider ל-i18n
 │   ├── company/[id]/
 │   │   └── page.jsx              # עמוד חברה יחידה
+│   ├── company/news/
+│   │   └── page.jsx              # דף חדשות מלא
 │   └── api/
-│       └── company/[id]/
-│           ├── changes/route.js      # API: שינויים
-│           ├── insolvency/route.js   # API: חדלות פירעון
-│           └── trustee/route.ts      # API: כונס נכסים
+│       └── company/
+│           ├── [id]/
+│           │   ├── changes/route.js      # API: שינויים
+│           │   ├── insolvency/route.js   # API: חדלות פירעון
+│           │   └── trustee/route.ts      # API: כונס נכסים
+│           └── news/route.js             # API: חדשות
 │
 ├── src/
 │   ├── components/               # React Components
@@ -618,6 +759,7 @@ mvp-company-checker/
 │   │   ├── CompanyCard.jsx           # כרטיס חברה
 │   │   ├── CompanyChangesList.jsx    # רשימת שינויים
 │   │   ├── CompanyInsolvencyList.jsx # חדלות פירעון
+│   │   ├── CompanyNews.jsx           # חדשות (תצוגה ממוזערת)
 │   │   ├── TrusteeCard.tsx           # כונס נכסים (TS)
 │   │   ├── DashboardLayout.jsx       # Layout
 │   │   ├── SearchBar.jsx             # Placeholder
@@ -634,6 +776,7 @@ mvp-company-checker/
 │   │
 │   ├── lib/                      # Utilities
 │   │   ├── apiClient.js              # Frontend API client
+│   │   ├── news.js                   # News aggregation service
 │   │   ├── pdf.js                    # 🔜 PDF export (בפיתוח)
 │   │   └── scoring.js                # חישוב ציונים (placeholder)
 │   │

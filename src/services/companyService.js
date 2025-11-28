@@ -43,8 +43,10 @@ export async function searchCompanies(query) {
 
     const response = await axios.get(GOV_IL_API, { params });
 
-    if (response.data?.success && response.data?.result?.records) {
-      const records = response.data.result.records;
+    const data = response.data;
+
+    if (data?.success && data?.result?.records) {
+      const records = data.result.records;
       
       // Log first record to see actual field names
       if (ENABLE_DEBUG && records.length > 0) {
