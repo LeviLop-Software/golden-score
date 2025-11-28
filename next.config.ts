@@ -3,12 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   
-  // Optimize production builds
-  swcMinify: true,
-  
   // Image optimization
   images: {
-    domains: ['data.gov.il'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'data.gov.il',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
   },
   

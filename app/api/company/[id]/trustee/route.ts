@@ -21,9 +21,9 @@ import { NextResponse } from 'next/server';
 import { getTrusteeData } from '../../../../../src/services/trusteeService';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 /**
