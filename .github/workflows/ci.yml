@@ -29,9 +29,10 @@ jobs:
         git config --local user.name "github-actions[bot]"
         npm version patch --no-git-tag-version
         NEW_VERSION=$(node -p "require('./package.json').version")
+        node scripts/generate-version.js
         echo "New version: $NEW_VERSION"
         echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        git add package.json
+        git add package.json src/lib/version.js
         git commit -m "chore: bump version to v$NEW_VERSION [skip ci]" || echo "No version change"
     
     - name: Push version bump

@@ -1,5 +1,7 @@
 'use client';
 
+import { APP_VERSION } from '@/src/lib/version';
+
 /**
  * DashboardLayout Component
  * TODO: Implement sidebar/navigation
@@ -8,7 +10,6 @@
  */
 export default function DashboardLayout({ children }) {
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score';
-  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0';
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,7 +22,7 @@ export default function DashboardLayout({ children }) {
       <footer className="bg-white border-t mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center text-gray-600">
           <p className="text-sm">
-            {appName} <span className="text-gray-400">v{appVersion}</span>
+            {appName} <span className="text-gray-400">v{APP_VERSION}</span>
           </p>
           <p className="text-xs text-gray-400 mt-1">
             © {new Date().getFullYear()} כל הזכויות שמורות

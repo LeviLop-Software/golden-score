@@ -1,10 +1,10 @@
 {
   "name": "mvp-company-checker",
-  "version": "0.0.1",
+  "version": "0.0.1-beta",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-version.js && next build",
     "start": "next start",
     "lint": "eslint",
     "version:patch": "npm version patch --no-git-tag-version",
