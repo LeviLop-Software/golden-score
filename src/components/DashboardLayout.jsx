@@ -12,9 +12,9 @@ export default function DashboardLayout({ children }) {
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score';
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
         {children}
       </main>
 
