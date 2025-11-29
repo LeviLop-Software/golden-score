@@ -77,11 +77,11 @@ export default function Home() {
                 {searchHistory.map((company: any, index: number) => (
                   <div
                     key={index}
-                    className="relative group"
+                    className="relative"
                   >
                     <button
                       onClick={() => handleCompanySelect(company)}
-                      className="w-full text-right px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200 hover:border-gray-300"
+                      className="w-full text-right px-4 py-3 pr-12 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200 hover:border-gray-300"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -95,13 +95,13 @@ export default function Home() {
                         </svg>
                       </div>
                     </button>
-                    {/* Delete button */}
+                    {/* Delete button - always visible */}
                     <button
                       onClick={(e) => handleRemoveFromHistory(e, company)}
-                      className="absolute top-2 left-2 p-1.5 bg-white hover:bg-red-50 rounded-full border border-gray-200 hover:border-red-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm"
+                      className="absolute top-1/2 -translate-y-1/2 left-2 p-1 bg-red-50 hover:bg-red-100 rounded-full border border-red-200 hover:border-red-300 transition-all duration-200 shadow-sm"
                       title="הסר מההיסטוריה"
                     >
-                      <svg className="w-4 h-4 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-red-500 hover:text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
