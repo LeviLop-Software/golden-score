@@ -59,7 +59,7 @@ export async function GET(
     });
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API] Error fetching trustee data:', error);
 
     // במקרה של שגיאה, מחזירים תשובה ריקה במקום 500

@@ -288,9 +288,9 @@ export const TrusteeCard: React.FC<TrusteeCardProps> = ({ companyId }) => {
 
         const result: TrusteeData = await response.json();
         setData(result);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[TrusteeCard] Error fetching data:', err);
-        setError(err.message || 'שגיאה בטעינת נתונים');
+        setError(err instanceof Error ? err.message : 'שגיאה בטעינת נתונים');
       } finally {
         setLoading(false);
       }
@@ -397,7 +397,7 @@ export const TrusteeCard: React.FC<TrusteeCardProps> = ({ companyId }) => {
           <div className="flex-1">
             <h3 className="font-bold text-red-900 mb-2">⚠ נמצאו הליכים משפטיים</h3>
             <p className="text-sm text-red-800 mb-3">
-              סה"כ {data.procedures.length} הליכים במאגרי הכונס הרשמי:
+              סה&quot;כ {data.procedures.length} הליכים במאגרי הכונס הרשמי:
             </p>
             <div className="flex flex-wrap gap-2 text-xs">
               {proceduresByType.liquidation > 0 && (

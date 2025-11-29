@@ -75,7 +75,7 @@ export default function CompanyCard({ company }) {
             {/* Company Number (ח"פ) with Copy Button */}
             {company.companyNumber && (
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-500 mb-1">מספר חברה (ח"פ)</span>
+                <span className="text-sm font-semibold text-gray-500 mb-1">מספר חברה (ח&quot;פ)</span>
                 <div className="flex items-center gap-2">
                   <span className="text-lg font-bold text-gray-900">{company.companyNumber}</span>
                   <button

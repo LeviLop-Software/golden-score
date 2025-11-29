@@ -168,7 +168,7 @@ export default function AutoComplete({ onSelect }) {
               </div>
               {company.companyNumber && (
                 <div className="text-sm text-gray-600 mt-1">
-                  ח"פ: {company.companyNumber}
+                  ח&quot;פ: {company.companyNumber}
                 </div>
               )}
               {company.type && (

@@ -7,25 +7,41 @@ import AutoComplete from '@/src/components/AutoComplete';
 
 const MAX_SEARCH_HISTORY = 15;
 
+interface Company {
+  companyNumber?: string;
+  registrationNumber?: string;
+  id?: string;
+  companyName?: string;
+  name?: string;
+}
+
 export default function Home() {
   const router = useRouter();
-  const [searchHistory, setSearchHistory] = useState<any[]>([]);
+  const [searchHistory, setSearchHistory] = useState<Company[]>([]);
 
   // Load search history from localStorage on mount
   useEffect(() => {
-    const history = localStorage.getItem('companySearchHistory');
-    if (history) {
-      setSearchHistory(JSON.parse(history));
-    }
+    const loadHistory = () => {
+      const history = localStorage.getItem('companySearchHistory');
+      if (history) {
+        try {
+          setSearchHistory(JSON.parse(history) as Company[]);
+        } catch {
+          // Invalid history, ignore
+        }
+      }
+    };
+    
+    loadHistory();
   }, []);
 
   // Handle company selection and update history
-  const handleCompanySelect = (company: any) => {
+  const handleCompanySelect = (company: Company) => {
     if (company) {
       // Update search history
       const newHistory = [
         company,
-        ...searchHistory.filter((item: any) => 
+        ...searchHistory.filter((item: Company) => 
           (item.companyNumber || item.registrationNumber || item.id) !== 
           (company.companyNumber || company.registrationNumber || company.id)
         )
@@ -41,10 +57,10 @@ export default function Home() {
   };
 
   // Handle removing a company from history
-  const handleRemoveFromHistory = (e: React.MouseEvent, companyToRemove: any) => {
+  const handleRemoveFromHistory = (e: React.MouseEvent, companyToRemove: Company) => {
     e.stopPropagation(); // Prevent navigation
     const companyId = companyToRemove.companyNumber || companyToRemove.registrationNumber || companyToRemove.id;
-    const newHistory = searchHistory.filter((item: any) => 
+    const newHistory = searchHistory.filter((item: Company) => 
       (item.companyNumber || item.registrationNumber || item.id) !== companyId
     );
     setSearchHistory(newHistory);
@@ -74,7 +90,7 @@ export default function Home() {
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">חיפושים אחרונים</h3>
               <div className="space-y-2">
-                {searchHistory.map((company: any, index: number) => (
+                {searchHistory.map((company: Company, index: number) => (
                   <div
                     key={index}
                     className="relative"
