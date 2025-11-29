@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }) {
       <footer className="bg-white border-t mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center text-gray-600">
           <p className="text-sm">
-            {appName} <span className="text-gray-400">v{APP_VERSION}</span>
+            {appName} <span className="text-gray-400">v{APP_VERSION}-beta</span>
           </p>
           <p className="text-xs text-gray-400 mt-1">
             © {new Date().getFullYear()} כל הזכויות שמורות
