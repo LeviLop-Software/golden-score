@@ -126,7 +126,41 @@ export default function IndustryBadge({ companyId, companyName, companyData, new
     return null;
   }
 
-  const { industry, display, confidence, reasoning, source } = classification;
+  const { industry, display, confidence, reasoning, source, quotaExceeded } = classification;
+  
+  // Special handling for quota exceeded cases
+  if (quotaExceeded || source === 'api_quota_exceeded') {
+    return (
+      <div className="relative inline-block">
+        <button
+          className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium rounded-full border bg-yellow-50 text-yellow-700 border-yellow-200 transition-all hover:shadow-sm"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          onClick={() => setShowTooltip(!showTooltip)}
+        >
+          מכסה נגמרה
+          <HelpCircle size={12} className="opacity-60" />
+        </button>
+        
+        {/* Tooltip */}
+        {showTooltip && (
+          <div className="absolute z-50 bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-sm rounded-lg shadow-lg">
+            <div className="space-y-2">
+              <div className="font-medium text-yellow-300">אין סיווג זמין</div>
+              <p className="text-gray-300 text-xs leading-relaxed">
+                {reasoning || 'אין סיווג AI - מכסת ה-API נגמרה. נסה שוב מאוחר יותר.'}
+              </p>
+              <div className="text-xs text-gray-500 pt-1 border-t border-gray-700">
+                מקור: חריגה ממכסת API
+              </div>
+            </div>
+            {/* Arrow */}
+            <div className="absolute top-full right-4 border-8 border-transparent border-t-gray-900" />
+          </div>
+        )}
+      </div>
+    );
+  }
   
   // Don't show badge for unclassified (general with low confidence)
   if (industry === 'general' && confidence < 0.5) {
@@ -165,7 +199,14 @@ export default function IndustryBadge({ companyId, companyName, companyData, new
               </p>
             )}
             <div className="text-xs text-gray-500 pt-1 border-t border-gray-700">
-              מקור: {source === 'ai_classification' ? 'AI' : source}
+              מקור: {
+                source === 'ai_classification' ? 'AI' : 
+                source === 'api_quota_exceeded' ? 'חריגה ממכסת API' :
+                source === 'name_based' ? 'ניתוח שם' :
+                source === 'keyword_matching' ? 'מילות מפתח' :
+                source === 'general_fallback' ? 'ברירת מחדל' :
+                source
+              }
             </div>
           </div>
           {/* Arrow */}

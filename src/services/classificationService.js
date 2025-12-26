@@ -63,7 +63,15 @@ export async function classifyCompany(companyData, options = {}) {
     if (USE_AI && !USE_MOCK_AI) {
       const aiResult = await classifyWithAI(companyData);
       
-      if (aiResult.confidence >= 0.5) {
+      // If quota exceeded, return immediately with that result
+      if (aiResult.quotaExceeded) {
+        const result = finalizeResult(aiResult, 'api_quota_exceeded');
+        saveToCache(companyData.id, result, companyData);
+        return result;
+      }
+      
+      // Accept AI result if confidence >= 0.5 OR if it's a deliberate "general" classification
+      if (aiResult.confidence >= 0.5 || (aiResult.industry === 'general' && aiResult.confidence >= 0.3)) {
         const result = finalizeResult(aiResult, 'ai_classification');
         saveToCache(companyData.id, result, companyData);
         return result;
@@ -512,6 +520,21 @@ export async function classifyWithAI(companyData) {
   } catch (error) {
     console.error('AI classification error:', error.message);
     console.error('Full error:', error);
+    
+    // Check if this is a quota exceeded error
+    if (error.message.includes('429') || 
+        error.message.includes('quota') || 
+        error.message.includes('limit') ||
+        error.message.includes('מכסת') ||
+        error.message.includes('API error: 429')) {
+      return {
+        industry: 'general',
+        confidence: 0,
+        reasoning: 'אין סיווג AI – מכסת ה-API נגמרה',
+        quotaExceeded: true
+      };
+    }
+    
     return {
       industry: 'general',
       confidence: 0.2,
@@ -569,14 +592,15 @@ Available Industries:
 13. consulting - ייעוץ
 14. media_marketing - תקשורת ושיווק
 15. tourism - תיירות
-16. general - כללי (אין סיווג)
+16. general - כללי (לחברות ללא סיווג ספציפי)
 
 Classification Rules:
 1. Look at the company name first - does it contain clear industry indicators?
 2. If name is clear about the business type, classify with high confidence
 3. If name is unclear, check business purpose (but only if specific, not generic)
-4. If both are generic/unclear, classify as "general"
+4. If both are generic/unclear, classify as "general" with appropriate reasoning
 5. Confidence should be 0.8+ for clear names, 0.6-0.8 for purpose-based, 0.3-0.5 for unclear cases
+6. Always provide specific reasoning in Hebrew explaining your classification choice
 
 Respond in JSON format only:
 {
@@ -621,11 +645,13 @@ Respond in JSON format only:
     if (!response.ok || data.error) {
       console.error('❌ API returned error:', data.error?.message || response.statusText);
       
-      if (response.status === 429 || data.error?.code === 429) {
+      if (response.status === 429 || data.error?.code === 429 || 
+          (data.error?.message && data.error.message.toLowerCase().includes('quota'))) {
         return {
           industry: 'general',
-          confidence: 0.1,
-          reasoning: 'חריגה ממכסת API - נסה שוב מאוחר יותר'
+          confidence: 0,
+          reasoning: 'אין סיווג AI – מכסת ה-API נגמרה',
+          quotaExceeded: true
         };
       }
       
@@ -714,7 +740,7 @@ function getMockClassification(companyData) {
 function finalizeResult(result, source) {
   const industry = result.industry || 'general';
   
-  return {
+  const finalResult = {
     industry,
     confidence: result.confidence,
     source,
@@ -724,6 +750,14 @@ function finalizeResult(result, source) {
     alternative_sectors: result.alternative_sectors || [],
     timestamp: new Date().toISOString()
   };
+  
+  // Add quota exceeded indicator if present
+  if (result.quotaExceeded) {
+    finalResult.quotaExceeded = true;
+    finalResult.source = 'api_quota_exceeded';
+  }
+  
+  return finalResult;
 }
 
 /**

@@ -2,7 +2,7 @@
   "metadata": {
     "version": "1.0",
     "created_at": "2025-12-25",
-    "total_entries": 18
+    "total_entries": 23
   },
   "classifications": {
     "123": {
@@ -77,6 +77,31 @@
         "city": "רחובות"
       }
     },
+    "511993966": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0,
+        "source": "api_quota_exceeded",
+        "reasoning": "אין סיווג AI – מכסת ה-API נגמרה",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:43:48.872Z",
+        "quotaExceeded": true
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:43:48.873Z",
+        "version": "1.0",
+        "method": "api_quota_exceeded"
+      },
+      "company_snapshot": {
+        "name": "ישראייר צ'רטר (1994) בע~מ",
+        "city": "תל אביב - יפו"
+      }
+    },
     "512966565": {
       "classification": {
         "industry": "technology",
@@ -123,6 +148,30 @@
       "company_snapshot": {
         "name": "שופרסל - מזון כל בע~מ",
         "city": "חיפה"
+      }
+    },
+    "514169812": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0.3,
+        "source": "general_fallback",
+        "reasoning": "לא ניתן לקבוע ענף ספציפי מהשם",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:26:18.391Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:26:18.392Z",
+        "version": "1.0",
+        "method": "general_fallback"
+      },
+      "company_snapshot": {
+        "name": "גולדן גו'ב בע~מ",
+        "city": "אשקלון"
       }
     },
     "514221209": {
@@ -438,6 +487,82 @@
       },
       "company_snapshot": {
         "name": "חברת האחים ישראל בעמ",
+        "city": ""
+      }
+    },
+    "test-quota-handling": {
+      "classification": {
+        "industry": "healthcare",
+        "confidence": 0.6,
+        "source": "keyword_matching",
+        "reasoning": "Found 1 keyword matches: טיפול",
+        "display": {
+          "he": "בריאות",
+          "en": "Healthcare"
+        },
+        "matches": [
+          "טיפול"
+        ],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:32:09.578Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:32:09.578Z",
+        "version": "1.0",
+        "method": "keyword_matching"
+      },
+      "company_snapshot": {
+        "name": "בדיקה לטיפול במכסה",
+        "city": ""
+      }
+    },
+    "test-quota-fixed": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0,
+        "source": "api_quota_exceeded",
+        "reasoning": "אין סיווג AI - מכסת ה-API נגמרה. נסה שוב מאוחר יותר.",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:33:52.791Z",
+        "quotaExceeded": true
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:33:52.792Z",
+        "version": "1.0",
+        "method": "api_quota_exceeded"
+      },
+      "company_snapshot": {
+        "name": "בדיקה חדשה למכסה",
+        "city": ""
+      }
+    },
+    "test-general-classification": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0,
+        "source": "api_quota_exceeded",
+        "reasoning": "אין סיווג AI – מכסת ה-API נגמרה",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:37:50.138Z",
+        "quotaExceeded": true
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:37:50.141Z",
+        "version": "1.0",
+        "method": "api_quota_exceeded"
+      },
+      "company_snapshot": {
+        "name": "חברת ישראל בעמ",
         "city": ""
       }
     }
