@@ -1,0 +1,66 @@
+{
+  "technology": {
+    "he": "טכנולוגיה",
+    "en": "Technology"
+  },
+  "banking_finance": {
+    "he": "בנקאות ופיננסים",
+    "en": "Banking & Finance"
+  },
+  "real_estate": {
+    "he": "נדל\"ן",
+    "en": "Real Estate"
+  },
+  "healthcare": {
+    "he": "בריאות",
+    "en": "Healthcare"
+  },
+  "manufacturing": {
+    "he": "תעשייה",
+    "en": "Manufacturing"
+  },
+  "retail": {
+    "he": "קמעונאות",
+    "en": "Retail"
+  },
+  "food_beverage": {
+    "he": "מזון ומשקאות",
+    "en": "Food & Beverage"
+  },
+  "construction": {
+    "he": "בנייה",
+    "en": "Construction"
+  },
+  "transportation": {
+    "he": "תחבורה",
+    "en": "Transportation"
+  },
+  "energy": {
+    "he": "אנרגיה",
+    "en": "Energy"
+  },
+  "education": {
+    "he": "חינוך",
+    "en": "Education"
+  },
+  "legal_services": {
+    "he": "שירותים משפטיים",
+    "en": "Legal Services"
+  },
+  "consulting": {
+    "he": "ייעוץ",
+    "en": "Consulting"
+  },
+  "media_marketing": {
+    "he": "תקשורת ושיווק",
+    "en": "Media & Marketing"
+  },
+  "tourism": {
+    "he": "תיירות",
+    "en": "Tourism"
+  },
+  "general": {
+    "he": "כללי",
+    "en": "General"
+  }
+}

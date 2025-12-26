@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileDown, ChevronDown, Copy, Check } from 'lucide-react';
+import IndustryBadge from './IndustryBadge';
 // import { exportCompanyPdf } from '../lib/pdf'; // TODO: Enable when Hebrew font support is added
 
 /**
@@ -63,11 +64,19 @@ export default function CompanyCard({ company }) {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {company.name || company.corporationName || t('company')}
             </h2>
-            {company.type && (
-              <span className="inline-block px-4 py-1.5 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
-                {company.type}
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {company.type && (
+                <span className="inline-block px-4 py-1.5 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
+                  {company.type}
+                </span>
+              )}
+              <IndustryBadge 
+                companyId={company.companyNumber || company.id}
+                companyName={company.name || company.corporationName}
+                companyData={company}
+                news={company.news || []}
+              />
+            </div>
           </div>
 
           {/* Main Details */}

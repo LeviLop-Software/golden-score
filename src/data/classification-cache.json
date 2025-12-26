@@ -1,0 +1,445 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2025-12-25",
+    "total_entries": 18
+  },
+  "classifications": {
+    "123": {
+      "classification": {
+        "industry": "retail",
+        "confidence": 1,
+        "source": "ai_classification",
+        "reasoning": "שופרסל היא רשת סופרמרקטים, כפי שמצוין במטרת העסק. הכותרות האחרונות ('שופרסל מורידה מחירים', 'מבצעים ברשת שופרסל') מאשרות שהיא עוסקת במכירת מוצרים לצרכנים, ולכן סיווגה הוא קמעונאות.",
+        "display": {
+          "he": "קמעונאות",
+          "en": "Retail"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T10:58:25.239Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T10:58:25.240Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "שופרסל",
+        "city": "תל אביב"
+      }
+    },
+    "510917040": {
+      "classification": {
+        "industry": "healthcare",
+        "confidence": 0.95,
+        "source": "ai_classification",
+        "reasoning": "השם 'טבע' (Teva) בהקשר הישראלי מזוהה באופן מיידי עם חברת התרופות הגדולה, טבע תעשיות פרמצבטיות בע\"מ. למרות שאין מידע ישיר על פעילותה בפרטי החברה, כותרות החדשות האחרונות (כמו 'צמיחה בהכנסות דיפלומט, אך הרווחיות נותרה מאתגרת' - דיפלומט היא חברה בתחום הבריאות והפרמצבטיקה) והעובדה שהשם 'טבע' מתייחס לעיתים קרובות לחברת התרופות, מצביעים בחוזקה על כך שהחברה פועלת בתחום הבריאות. ההתייחסויות החדשות יותר ל'מרפסת' של קריית ביאליק הן ככל הנראה אינן קשורות ישירות לחברת אחזקות גדולה זו, אלא מהוות מקרים של שימוש בשם דומה או פרויקטים קהילתיים.",
+        "display": {
+          "he": "בריאות",
+          "en": "Healthcare"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:06:09.694Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:06:09.696Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "טבע אחזקות בע~מ",
+        "city": "תל אביב - יפו"
+      }
+    },
+    "511344186": {
+      "classification": {
+        "industry": "retail",
+        "confidence": 0.9,
+        "source": "ai_classification",
+        "reasoning": "הכותרות האחרונות \"גם רשת יוחננוף מגיעה לחולון\" וכן אזכורים אחרים של \"רשת יוחננוף\" מצביעים בבירור על פעילות קמעונאית. למרות שהתקנון כללי, החדשות הן אינדיקציה חזקה לפעילותה כרשת קמעונאית.",
+        "display": {
+          "he": "קמעונאות",
+          "en": "Retail"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:05:34.561Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:05:34.562Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "מ. יוחננוף ובניו (1988) בע~מ",
+        "city": "רחובות"
+      }
+    },
+    "512966565": {
+      "classification": {
+        "industry": "technology",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates technology business: \"כהן פיתוח טכנולוגיות כ.פ.ט.בע~מ\"",
+        "display": {
+          "he": "טכנולוגיה",
+          "en": "Technology"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:24:25.609Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:24:25.609Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "כהן פיתוח טכנולוגיות כ.פ.ט.בע~מ",
+        "city": "נתניה"
+      }
+    },
+    "513653964": {
+      "classification": {
+        "industry": "food_beverage",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates food_beverage business: \"שופרסל - מזון כל בע~מ\"",
+        "display": {
+          "he": "מזון ומשקאות",
+          "en": "Food & Beverage"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:23:44.117Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:23:44.118Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "שופרסל - מזון כל בע~מ",
+        "city": "חיפה"
+      }
+    },
+    "514221209": {
+      "classification": {
+        "industry": "food_beverage",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates food_beverage business: \"מוש הפקת ירידי אוכל ואומנות בע~מ\"",
+        "display": {
+          "he": "מזון ומשקאות",
+          "en": "Food & Beverage"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:23:37.414Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:23:37.415Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "מוש הפקת ירידי אוכל ואומנות בע~מ",
+        "city": "תל אביב - יפו"
+      }
+    },
+    "517121000": {
+      "classification": {
+        "industry": "technology",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates technology business: \"סייבר אינטל בע~מ\"",
+        "display": {
+          "he": "טכנולוגיה",
+          "en": "Technology"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:11:38.373Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:11:38.374Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "סייבר אינטל בע~מ",
+        "city": "תל אביב - יפו"
+      }
+    },
+    "520022732": {
+      "classification": {
+        "industry": "retail",
+        "confidence": 0.95,
+        "source": "ai_classification",
+        "reasoning": "השם 'שופרסל' (Shufersal) הוא שם מאוד מוכר בישראל המזוהה באופן בלעדי עם רשת סופרמרקטים, שהיא עסק קמעונאי מובהק.",
+        "display": {
+          "he": "קמעונאות",
+          "en": "Retail"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:24:13.181Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:24:13.182Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "שופרסל בע~מ",
+        "city": "ראשון לציון"
+      }
+    },
+    "test123": {
+      "classification": {
+        "industry": "technology",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates technology business: \"טכנולוגיות מתקדמות בעמ\"",
+        "display": {
+          "he": "טכנולוגיה",
+          "en": "Technology"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:09:22.939Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:09:22.939Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "טכנולוגיות מתקדמות בעמ",
+        "city": "תל אביב"
+      }
+    },
+    "test456": {
+      "classification": {
+        "industry": "consulting",
+        "confidence": 0.95,
+        "source": "ai_classification",
+        "reasoning": "שם החברה 'אבי כהן יועץ עסקי' מציין במפורש את תחום הייעוץ העסקי, ולכן הסיווג הוא 'ייעוץ'.",
+        "display": {
+          "he": "ייעוץ",
+          "en": "Consulting"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:10:56.086Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:10:56.088Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "אבי כהן יועץ עסקי",
+        "city": "חיפה"
+      }
+    },
+    "test789": {
+      "classification": {
+        "industry": "energy",
+        "confidence": 0.6,
+        "source": "keyword_matching",
+        "reasoning": "Found 1 keyword matches: חברת חשמל",
+        "display": {
+          "he": "אנרגיה",
+          "en": "Energy"
+        },
+        "matches": [
+          "חברת חשמל"
+        ],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:11:12.200Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:11:12.200Z",
+        "version": "1.0",
+        "method": "keyword_matching"
+      },
+      "company_snapshot": {
+        "name": "חברת אופק בעמ",
+        "city": "ירושלים"
+      }
+    },
+    "test789new": {
+      "classification": {
+        "industry": "energy",
+        "confidence": 0.6,
+        "source": "keyword_matching",
+        "reasoning": "Found 1 keyword matches: חברת חשמל",
+        "display": {
+          "he": "אנרגיה",
+          "en": "Energy"
+        },
+        "matches": [
+          "חברת חשמל"
+        ],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:12:19.750Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:12:19.751Z",
+        "version": "1.0",
+        "method": "keyword_matching"
+      },
+      "company_snapshot": {
+        "name": "חברת אופק בעמ",
+        "city": "ירושלים"
+      }
+    },
+    "test789fixed": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0.3,
+        "source": "general_fallback",
+        "reasoning": "לא ניתן לקבוע ענף ספציפי מהשם",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:04.522Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:04.527Z",
+        "version": "1.0",
+        "method": "general_fallback"
+      },
+      "company_snapshot": {
+        "name": "חברת אופק בעמ",
+        "city": "ירושלים"
+      }
+    },
+    "test-tech": {
+      "classification": {
+        "industry": "technology",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates technology business: \"טכנולוגיות מתקדמות בעמ\"",
+        "display": {
+          "he": "טכנולוגיה",
+          "en": "Technology"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:25.460Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:25.460Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "טכנולוגיות מתקדמות בעמ",
+        "city": ""
+      }
+    },
+    "test-bank": {
+      "classification": {
+        "industry": "banking_finance",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates banking_finance business: \"בנק לאומי בעמ\"",
+        "display": {
+          "he": "בנקאות ופיננסים",
+          "en": "Banking & Finance"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:34.606Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:34.606Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "בנק לאומי בעמ",
+        "city": ""
+      }
+    },
+    "test-consulting": {
+      "classification": {
+        "industry": "consulting",
+        "confidence": 0.9,
+        "source": "name_based",
+        "reasoning": "Company name clearly indicates consulting business: \"יועצי ניהול משולבים בעמ\"",
+        "display": {
+          "he": "ייעוץ",
+          "en": "Consulting"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:42.883Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:42.883Z",
+        "version": "1.0",
+        "method": "name_based"
+      },
+      "company_snapshot": {
+        "name": "יועצי ניהול משולבים בעמ",
+        "city": ""
+      }
+    },
+    "test-ambiguous": {
+      "classification": {
+        "industry": "consulting",
+        "confidence": 0.85,
+        "source": "ai_classification",
+        "reasoning": "השם 'שירותי דוד כהן' יחד עם תיאור הפעילות 'שירותים עסקיים' מצביע בבירור על מתן שירותי ייעוץ וסיוע לעסקים.",
+        "display": {
+          "he": "ייעוץ",
+          "en": "Consulting"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:50.869Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:50.870Z",
+        "version": "1.0",
+        "method": "ai_classification"
+      },
+      "company_snapshot": {
+        "name": "שירותי דוד כהן בעמ",
+        "city": ""
+      }
+    },
+    "test-generic": {
+      "classification": {
+        "industry": "general",
+        "confidence": 0.3,
+        "source": "general_fallback",
+        "reasoning": "לא ניתן לקבוע ענף ספציפי מהשם",
+        "display": {
+          "he": "כללי",
+          "en": "General"
+        },
+        "matches": [],
+        "alternative_sectors": [],
+        "timestamp": "2025-12-26T11:17:59.371Z"
+      },
+      "metadata": {
+        "classified_at": "2025-12-26T11:17:59.371Z",
+        "version": "1.0",
+        "method": "general_fallback"
+      },
+      "company_snapshot": {
+        "name": "חברת האחים ישראל בעמ",
+        "city": ""
+      }
+    }
+  }
+}

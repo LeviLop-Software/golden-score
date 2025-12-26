@@ -1,0 +1,185 @@
+{
+  "technology": {
+    "he": [
+      "טכנולוגי", "טכנולוגיה", "תוכנה", "מחשבים", "דיגיטל", "סייבר", 
+      "הייטק", "אפליקציה", "דאטה", "מידע", "אינטרנט", "מערכות",
+      "פיתוח", "תכנות", "מחשב", "רשת", "אלקטרוניקה", "חדשנות",
+      "מיקרוסופט", "גוגל", "אמזון", "סמסונג", "אפל", "מרכזים"
+    ],
+    "en": [
+      "tech", "technology", "software", "digital", "cyber", "app", 
+      "data", "platform", "cloud", "internet", "system", "development",
+      "programming", "computer", "network", "electronic", "innovation"
+    ]
+  },
+  "banking_finance": {
+    "he": [
+      "בנק", "ביטוח", "פיננס", "השקעות", "אשראי", "כספים", "חיסכון",
+      "פנסיה", "ביטוחי", "משכנתא", "הלוואה", "שוק הון", "פיננסי",
+      "קרן", "השקעה", "מימון", "בנקאות", "כלכלה"
+    ],
+    "en": [
+      "bank", "finance", "investment", "credit", "insurance", "capital",
+      "fund", "financial", "banking", "loan", "mortgage", "pension",
+      "savings", "economy", "economic", "money", "fiscal"
+    ]
+  },
+  "real_estate": {
+    "he": [
+      "נדלן", "נדל\"ן", "בנייה", "דירות", "משרדים", "קבלן", "יזמות",
+      "פיתוח", "תכנון", "בניה", "מקרקעין", "דיור", "נכסים",
+      "בית", "בתים", "מגורים", "מסחרי", "קניונים"
+    ],
+    "en": [
+      "real estate", "property", "development", "construction", "building",
+      "housing", "residential", "commercial", "office", "apartment",
+      "contractor", "developer", "planning", "estate", "land"
+    ]
+  },
+  "healthcare": {
+    "he": [
+      "בריאות", "רפואה", "תרופות", "רופא", "קליניקה", "בית חולים",
+      "רפואי", "פארמה", "פרמצבטי", "פרמצבטיות", "טיפול", "מרפאה", 
+      "רפואיות", "כירורגיה", "רוקחות", "סיעוד", "שיניים", "וטרינר", 
+      "דנטל", "טבע", "תעשיות פרמצבטיות"
+    ],
+    "en": [
+      "health", "medical", "pharma", "clinic", "hospital", "doctor",
+      "medicine", "pharmaceutical", "treatment", "healthcare", "dental",
+      "surgery", "pharmacy", "veterinary", "care", "therapy"
+    ]
+  },
+  "manufacturing": {
+    "he": [
+      "תעשייה", "ייצור", "מפעל", "תעשייתי", "פרודקציה", "חרושת",
+      "מכונות", "מתכת", "פלסטיק", "כימי", "טקסטיל", "מזון תעשייתי",
+      "קו ייצור", "ברזל", "עץ", "נייר", "קרמיקה"
+    ],
+    "en": [
+      "manufacturing", "factory", "production", "industrial", "machinery",
+      "metal", "plastic", "chemical", "textile", "steel", "iron",
+      "wood", "paper", "ceramic", "assembly", "fabrication"
+    ]
+  },
+  "retail": {
+    "he": [
+      "קמעונאות", "מכירות", "חנות", "קניות", "מסחר", "סחר",
+      "קניון", "בוטיק", "אופנה", "ביגוד", "נעליים", "תכשיטים",
+      "אלקטרוניקה", "ספרים", "צרכנות", "רשת", "שיווק"
+    ],
+    "en": [
+      "retail", "shop", "store", "shopping", "commerce", "fashion",
+      "clothing", "shoes", "jewelry", "electronics", "books",
+      "mall", "boutique", "consumer", "chain", "sales", "trade"
+    ]
+  },
+  "food_beverage": {
+    "he": [
+      "מזון", "אוכל", "משקאות", "מסעדה", "בית קפה", "קייטרינג",
+      "מטבח", "שף", "אירוח", "קפה", "משקה", "אלכוהול", "יין",
+      "מאפייה", "מסעדות", "פיצה", "המבורגר", "פלאפל", "שטראוס",
+      "אליט", "תנובה", "עלית", "גרופ", "מותגי מזון"
+    ],
+    "en": [
+      "food", "restaurant", "cafe", "catering", "kitchen", "chef",
+      "hospitality", "coffee", "beverage", "drink", "alcohol", "wine",
+      "bakery", "pizza", "burger", "dining", "culinary", "bar"
+    ]
+  },
+  "construction": {
+    "he": [
+      "בנייה", "קבלנות", "הקמה", "עבודות", "תשתיות", "כבישים",
+      "גשרים", "מנהרות", "תכנון", "אדריכלות", "הנדסה", "פרוייקט",
+      "בניין", "שיפוצים", "חפירה", "בטון", "צמנט"
+    ],
+    "en": [
+      "construction", "building", "contractor", "infrastructure", "roads",
+      "bridges", "tunnels", "architecture", "engineering", "project",
+      "renovation", "excavation", "concrete", "cement", "structural"
+    ]
+  },
+  "transportation": {
+    "he": [
+      "תחבורה", "הובלה", "משאיות", "אוטובוס", "רכב", "רכבת",
+      "לוגיסטיקה", "משלוחים", "דלק", "תחנת דלק", "מוסך",
+      "רישוי", "נהג", "שירותי הובלה", "תעופה", "נמל"
+    ],
+    "en": [
+      "transportation", "logistics", "shipping", "trucking", "delivery",
+      "bus", "vehicle", "train", "fuel", "garage", "driver",
+      "aviation", "port", "freight", "cargo", "transport"
+    ]
+  },
+  "energy": {
+    "he": [
+      "אנרגיה", "חשמל", "גז", "סולרי", "רוח", "סוללות", "דלק",
+      "נפט", "פטרולים", "חח\"י", "מתח גבוה", "מתקן כוח",
+      "ירוק", "מתחדש", "פאנלים"
+    ],
+    "en": [
+      "energy", "electricity", "gas", "solar", "wind", "battery",
+      "fuel", "oil", "petroleum", "power", "electric", "renewable",
+      "green", "panel", "generator", "utility"
+    ]
+  },
+  "education": {
+    "he": [
+      "חינוך", "השכלה", "בית ספר", "אוניברסיטה", "מכללה", "לימודים",
+      "הוראה", "מורה", "סטודנט", "קורס", "הכשרה", "הדרכה",
+      "חינוכי", "לימוד", "אקדמיה", "מחקר", "מדעי"
+    ],
+    "en": [
+      "education", "school", "university", "college", "teaching",
+      "teacher", "student", "course", "training", "learning",
+      "academic", "research", "study", "educational", "instructor"
+    ]
+  },
+  "legal_services": {
+    "he": [
+      "משפט", "עורך דין", "משפטי", "עו\"ד", "חוק", "בית משפט",
+      "משפטים", "יועץ משפטי", "נוטריון", "פטנטים", "זכויות יוצרים",
+      "ייצוג", "תביעה", "הסכם", "חוזה"
+    ],
+    "en": [
+      "legal", "law", "lawyer", "attorney", "court", "notary",
+      "patent", "copyright", "contract", "agreement", "litigation",
+      "representation", "judicial", "legal services"
+    ]
+  },
+  "consulting": {
+    "he": [
+      "ייעוץ", "יעוץ", "יועץ", "ייעוצי", "ניהול", "אסטרטגיה",
+      "שירותים עסקיים", "הדרכה", "מנטור", "קונסולטינג", "מומחה",
+      "מקצועי", "עסקי", "ביזנס"
+    ],
+    "en": [
+      "consulting", "consultant", "advisory", "business services",
+      "strategy", "management", "professional services", "expert",
+      "mentor", "guidance", "business", "corporate"
+    ]
+  },
+  "media_marketing": {
+    "he": [
+      "תקשורת", "שיווק", "פרסום", "דיגיטלי מרקטינג", "מדיה",
+      "עיתון", "רדיו", "טלוויזיה", "יחסי ציבור", "פרסומת",
+      "קמפיין", "ברנדינג", "גרפיקה", "עיצוב", "תוכן"
+    ],
+    "en": [
+      "media", "marketing", "advertising", "digital marketing", "pr",
+      "public relations", "newspaper", "radio", "television", "campaign",
+      "branding", "graphic", "design", "content", "social media"
+    ]
+  },
+  "tourism": {
+    "he": [
+      "תיירות", "נופש", "מלון", "בית מלון", "צימר", "טיול",
+      "סוכנות נסיעות", "הזמנות", "חבילות נופש", "מדריך תיירות",
+      "אירוח", "פנדק", "אטרקציה", "פעילות", "בילוי"
+    ],
+    "en": [
+      "tourism", "travel", "hotel", "vacation", "resort", "tour",
+      "travel agency", "booking", "hospitality", "attraction",
+      "activity", "entertainment", "guide", "accommodation"
+    ]
+  }
+}
