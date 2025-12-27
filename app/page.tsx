@@ -75,7 +75,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl font-bold mb-3">
             <span className="bg-linear-to-r from-yellow-500 via-amber-500 to-yellow-600 bg-clip-text text-transparent">{process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'}</span>
           </h1>
-          <p className="text-gray-600 text-lg">מערכת בדיקת אמינות חברות מתקדמת</p>
+          <p className="text-gray-600 text-lg">מערכת בדיקת ח.פ ורקע עסקי חברות ישראליות מתקדמת</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6">

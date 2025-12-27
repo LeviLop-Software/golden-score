@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: `${process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'} - בדיקת אמינות חברות ישראליות`,
+  title: `${process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'} - בדיקת ח.פ ורקע עסקי חברות ישראליות`,
   description: "בדקו את האמינות העסקית של חברות בישראל - מידע מקיף על שינויים, חדלות פירעון וכונסי נכסים מכל מאגרי הממשלה",
 };
 

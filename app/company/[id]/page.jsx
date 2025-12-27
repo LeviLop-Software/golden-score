@@ -33,7 +33,7 @@ export default function CompanyPage() {
     const companyNumber = company.companyNumber || company.id || '';
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const pageUrl = `${baseUrl}/company/${companyNumber}`;
-    const title = `${companyName} - בדיקת אמינות | ${process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'}`;
+    const title = `${companyName} - בדיקת ח.פ ורקע עסקי | ${process.env.NEXT_PUBLIC_APP_NAME || 'Golden Score'}`;
     const description = `בדוק את האמינות העסקית של ${companyName} (ח.פ ${companyNumber}) - מידע מקיף על שינויים, חדלות פירעון וכונסי נכסים`;
     
     return {
