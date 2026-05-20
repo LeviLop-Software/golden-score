@@ -20,6 +20,7 @@ const GEMINI_MODEL = 'gemini-2.5-flash-lite';
  */
 const USE_AI = process.env.USE_AI !== 'false';
 const USE_MOCK_AI = process.env.USE_MOCK_AI === 'true';
+const USE_ENHANCED_CLASSIFICATION = process.env.USE_ENHANCED_CLASSIFICATION === 'true';
 
 /**
  * In-memory cache to prevent repeated API calls during development
@@ -59,8 +60,28 @@ export async function classifyCompany(companyData, options = {}) {
       return result;
     }
 
-    // 4. If name is not clear, try AI with strict rules (if enabled)
+    // 4. If name is not clear, try AI with enhanced information (if enabled)
     if (USE_AI && !USE_MOCK_AI) {
+      // Try to fetch additional information for better context (if enhanced classification is enabled)
+      if (USE_ENHANCED_CLASSIFICATION && (!companyData.news || companyData.news.length === 0)) {
+        try {
+          // Import news service if available
+          const { searchNews } = await import('../lib/news.js').catch(() => ({}));
+          if (searchNews && companyData.name) {
+            console.log('📰 Fetching news for enhanced classification...');
+            const newsResults = await searchNews(companyData.name, companyData.id);
+            if (newsResults && Array.isArray(newsResults) && newsResults.length > 0) {
+              companyData.news = newsResults.slice(0, 3).map(item => 
+                item.title || item.headline || item.description || ''
+              ).filter(Boolean);
+              console.log(`📰 Found ${companyData.news.length} news items for classification`);
+            }
+          }
+        } catch (newsError) {
+          console.log('⚠️ Could not fetch news for classification:', newsError.message);
+        }
+      }
+
       const aiResult = await classifyWithAI(companyData);
       
       // If quota exceeded, return immediately with that result
@@ -544,6 +565,91 @@ export async function classifyWithAI(companyData) {
 }
 
 /**
+ * Search for additional company information online
+ */
+async function searchCompanyInfo(companyData) {
+  // Only search for additional info if enhanced classification is enabled
+  if (!USE_ENHANCED_CLASSIFICATION) {
+    return ['פיצ'ר חיפוש מידע נוסף כבוי'];
+  }
+
+  try {
+    console.log('🔍 Searching for additional company information online...');
+    
+    const searchQueries = [
+      `"${companyData.name}"`,
+      companyData.englishName ? `"${companyData.englishName}"` : null,
+      companyData.id ? `חברה ${companyData.id}` : null
+    ].filter(Boolean);
+
+    let additionalInfo = [];
+    
+    for (const query of searchQueries.slice(0, 2)) { // Limit to 2 searches to avoid quota issues
+      try {
+        console.log(`🔍 Searching: ${query}`);
+        
+        // Use Google search via fetch (simple approach)
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + ' site:linkedin.com OR site:facebook.com OR site:wikipedia.org OR site:duns100.co.il')}`;
+        
+        // For now, we'll use the company's existing news as additional context
+        // In a production environment, you could integrate with search APIs
+        if (companyData.news && companyData.news.length > 0) {
+          additionalInfo.push(...companyData.news.slice(0, 3));
+          break; // If we have news, that's good additional context
+        }
+        
+        // Alternative: Check if company name contains industry indicators
+        const industryHints = extractIndustryHints(companyData.name, companyData.englishName);
+        if (industryHints.length > 0) {
+          additionalInfo.push(`מילות מפתח שנמצאו בשם החברה: ${industryHints.join(', ')}`);
+        }
+        
+      } catch (searchError) {
+        console.log(`⚠️ Search failed for "${query}":`, searchError.message);
+      }
+    }
+    
+    return additionalInfo.length > 0 ? additionalInfo : ['אין מידע נוסף זמין'];
+    
+  } catch (error) {
+    console.error('Error searching for company info:', error);
+    return ['שגיאה בחיפוש מידע נוסף'];
+  }
+}
+
+/**
+ * Extract industry hints from company names
+ */
+function extractIndustryHints(hebrewName, englishName) {
+  const hints = [];
+  const text = `${hebrewName || ''} ${englishName || ''}`.toLowerCase();
+  
+  const industryKeywords = {
+    'טכנולוגיה': ['tech', 'software', 'cyber', 'data', 'digital', 'טכנולוג', 'תוכנה', 'סייבר', 'דיגיטל'],
+    'בנקאות': ['bank', 'finance', 'invest', 'capital', 'בנק', 'פיננס', 'השקעות', 'הון'],
+    'נדלן': ['real estate', 'property', 'construction', 'נדלן', 'נכסים', 'בנייה', 'קבלן'],
+    'בריאות': ['health', 'medical', 'pharma', 'clinic', 'בריאות', 'רפואה', 'פארמה', 'קליניקה'],
+    'קמעונאות': ['retail', 'store', 'market', 'shop', 'קמעונאות', 'חנות', 'שוק'],
+    'מזון': ['food', 'restaurant', 'catering', 'מזון', 'מסעדה', 'קייטרינג', 'אוכל'],
+    'תחבורה': ['transport', 'logistics', 'shipping', 'תחבורה', 'לוגיסטיקה', 'משלוחים'],
+    'אנרגיה': ['energy', 'electric', 'solar', 'power', 'אנרגיה', 'חשמל', 'סולארי', 'כוח'],
+    'ייעוץ': ['consulting', 'advisory', 'ייעוץ', 'יועצים', 'ייעוצי'],
+    'תקשורת': ['media', 'marketing', 'advertising', 'תקשורת', 'שיווק', 'פרסום']
+  };
+  
+  for (const [industry, keywords] of Object.entries(industryKeywords)) {
+    for (const keyword of keywords) {
+      if (text.includes(keyword)) {
+        hints.push(`${industry} (${keyword})`);
+        break; // Only add each industry once
+      }
+    }
+  }
+  
+  return hints;
+}
+
+/**
  * Real Gemini API call
  */
 async function callRealGeminiAPI(companyData) {
@@ -554,27 +660,41 @@ async function callRealGeminiAPI(companyData) {
     throw new Error('GEMINI_API_KEY not configured');
   }
 
+  // Search for additional company information
+  const additionalInfo = await searchCompanyInfo(companyData);
+
   // Format news headlines if available
   const newsSection = companyData.news && companyData.news.length > 0
     ? `Recent News Headlines:\n${companyData.news.map(n => `- ${n}`).join('\n')}`
     : 'Recent News Headlines: No news available';
 
+  // Format additional information
+  const additionalInfoSection = additionalInfo.length > 0
+    ? `Additional Information Found:\n${additionalInfo.map(info => `- ${info}`).join('\n')}`
+    : 'Additional Information: None found';
+
   const prompt = `
 You are an expert business analyst specializing in Israeli companies.
-Classify this company into ONE industry sector.
+Classify this company into ONE industry sector using ALL available information.
 
-CRITICAL RULES:
-1. Focus PRIMARILY on the company NAME itself
-2. If the company name clearly describes a business activity, classify based on it even if other fields are generic
-3. Use "general" ONLY if the company name itself is vague or meaningless
-4. Do NOT use external sources or assume information not provided
-5. Do NOT guess beyond the 16 industries provided
+ENHANCED CLASSIFICATION RULES:
+1. Analyze the company NAME first - look for clear industry indicators
+2. Use additional information found online to understand the company's actual business
+3. Consider news headlines and industry hints from the company name
+4. If multiple sources suggest the same industry, classify with high confidence
+5. Use "general" ONLY if no clear industry emerges from all sources
+6. Do NOT guess - base classification on evidence provided
 
 Company Details:
 - Name (Hebrew): ${companyData.name}
 - Name (English): ${companyData.englishName || 'N/A'}
+- Company ID: ${companyData.id || 'N/A'}
 - City: ${companyData.city || 'N/A'}
 - Business Purpose: ${companyData.purpose || 'N/A'}
+
+${additionalInfoSection}
+
+${newsSection}
 
 Available Industries:
 1. technology - טכנולוגיה
@@ -594,19 +714,21 @@ Available Industries:
 15. tourism - תיירות
 16. general - כללי (לחברות ללא סיווג ספציפי)
 
-Classification Rules:
-1. Look at the company name first - does it contain clear industry indicators?
-2. If name is clear about the business type, classify with high confidence
-3. If name is unclear, check business purpose (but only if specific, not generic)
-4. If both are generic/unclear, classify as "general" with appropriate reasoning
-5. Confidence should be 0.8+ for clear names, 0.6-0.8 for purpose-based, 0.3-0.5 for unclear cases
-6. Always provide specific reasoning in Hebrew explaining your classification choice
+Enhanced Classification Rules:
+1. Start with the company name - does it clearly indicate an industry?
+2. Cross-reference with additional information found online
+3. Look for patterns in news headlines that suggest business activity
+4. Consider industry hints extracted from company names
+5. If multiple sources point to the same industry, use high confidence (0.8+)
+6. If sources conflict or are unclear, use medium confidence (0.5-0.7)
+7. Use "general" with low confidence (0.3-0.5) only when no clear industry emerges
+8. Always provide specific reasoning explaining your classification choice
 
 Respond in JSON format only:
 {
   "industry": "industry_key",
   "confidence": 0.85,
-  "reasoning": "הסבר קצר בעברית למה נבחר הסיווג הזה"
+  "reasoning": "הסבר מפורט בעברית מדוע נבחר סיווג זה, כולל התבססות על המידע הנוסף שנמצא"
 }
 `;
 
